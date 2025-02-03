@@ -9,6 +9,9 @@ def homepage(request):
     # Fetch the next upcoming fixture from the database
     upcoming_fixture = Fixture.objects.filter(is_played=False).order_by('date', 'time').first()
 
+    # Fetch the most recent past result
+    latest_result = Fixture.objects.filter(is_played=True).order_by('-date', '-time').first()
+
     # Dummy league table (will be replaced later)
     league_table = [
         {"position": 1, "team": "Top Team FC", "points": 50},
