@@ -25,3 +25,25 @@ def homepage(request):
     }
 
     return render(request, "team/homepage.html", context)
+
+
+def results_view(request):
+    """View to display past match results"""
+    past_fixtures = Fixture.objects.filter(is_played=True).order_by('-date', '-time')  # Show most recent first
+
+    context = {
+        "past_fixtures": past_fixtures
+    }
+
+    return render(request, "team/results.html", context)
+
+
+def fixtures_view(request):
+    """View to display upcoming fixtures"""
+    upcoming_fixtures = Fixture.objects.filter(is_played=False).order_by('date', 'time')
+
+    context = {
+        "upcoming_fixtures": upcoming_fixtures
+    }
+
+    return render(request, "team/fixtures.html", context)

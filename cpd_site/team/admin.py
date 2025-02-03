@@ -13,4 +13,4 @@ class FixtureAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Team, TeamAdmin)
-admin.site.register(Fixture)
+admin.site.register(Fixture, FixtureAdmin)
