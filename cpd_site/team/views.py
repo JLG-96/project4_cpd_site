@@ -9,7 +9,7 @@ def homepage(request):
     # Fetch the next upcoming fixture from the database
     upcoming_fixture = Fixture.objects.filter(is_played=False).order_by('date', 'time').first()
 
-    # Fetch the most recent past result
+    # Fetch the most recently played fixture
     latest_result = Fixture.objects.filter(is_played=True).order_by('-date', '-time').first()
 
     # Dummy league table (will be replaced later)
@@ -22,7 +22,8 @@ def homepage(request):
 
     context = {
         "team": team,
-        "upcoming_fixture": upcoming_fixture,  # Now using real database data
+        "upcoming_fixture": upcoming_fixture,
+        "latest_result": latest_result,
         "league_table": league_table,
         "managers_comment": managers_comment
     }
