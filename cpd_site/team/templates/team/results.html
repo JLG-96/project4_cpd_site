@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Past Results - CPD Yr Wyddgrug</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Past Results</h1>
+      <h1>Results</h1>
     </header>
 
     <section>
-        <h2>Match Results</h2>
-        <ul>
-            {% for fixture in past_fixtures %}
-                <li>
-                    {{ fixture.opponent }}
-                    {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
-                    - {{ fixture.date }} at {{ fixture.time }} 
-                    
-                    {% if fixture.is_played %}
-                        <strong>Final Score:</strong> {{ fixture.goals_for }} - {{ fixture.goals_against }}
-                    {% else %}
-                        Match not played yet.
-                    {% endif %}
-                </li>
-            {% empty %}
-                <p>No past results available.</p>
-            {% endfor %}
-        </ul>
+      <h2>Match Results</h2>
+      <h1>Results</h1>  {# Changed "Past Results" to "Results" #}
+
+      <ul>
+          {% for fixture in past_fixtures %}
+              <li>
+                  {{ fixture.opponent }} 
+                  ({% if fixture.home_or_away == "H" %}Home{% elif fixture.home_or_away == "A" %}Away{% endif %}) -  
+                  {{ fixture.date }} at {{ fixture.time }} - 
+                  
+                  {% if fixture.match_completed %}
+                      <strong>Final Score:</strong> {{ fixture.goals_for }} - {{ fixture.goals_against }}
+                  {% else %}
+                      <strong>Match not played yet.</strong>
+                  {% endif %}
+              </li>
+          {% empty %}
+              <p>No results available.</p>
+          {% endfor %}
+      </ul>
     </section>
-</body>
+  </body>
 </html>
