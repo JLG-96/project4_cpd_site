@@ -9,8 +9,6 @@ class Team(models.Model):
     founded_year = models.PositiveIntegerField()  # Year the team was founded
     logo = models.ImageField(upload_to='team_logos/', blank=True, null=True)  # Club logo
 
-
-    
     # Team stats for league tracking
     games_played = models.PositiveIntegerField(default=0)  # Total games played
     wins = models.PositiveIntegerField(default=0)  # Number of wins
@@ -21,4 +19,22 @@ class Team(models.Model):
     points = models.PositiveIntegerField(default=0)  # Total points in the league
 
     def __str__(self):
-        return self.name
+        return self.name  # This ensures a readable name in the admin panel
+
+
+class Fixture(models.Model):
+    HOME_OR_AWAY = [
+        ('H', 'Home'),
+        ('A', 'Away'),
+    ]
+    opponent = models.CharField(max_length=100)  # Opposing team's name
+    date = models.DateField()  # Match date
+    time = models.TimeField()  # Kickoff time
+    location = models.CharField(max_length=100)  # Match venue
+    home_or_away = models.CharField(max_length=1, choices=HOME_OR_AWAY)  # Home/Away status
+    goals_for = models.PositiveIntegerField(null=True, blank=True)  # Goals scored by CPD Yr Wyddgrug
+    goals_against = models.PositiveIntegerField(null=True, blank=True)  # Goals conceded
+    is_played = models.BooleanField(default=False)  # Mark if the match has been played
+
+    def __str__(self):
+        return f"{self.opponent} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
