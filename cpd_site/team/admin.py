@@ -7,8 +7,8 @@ class TeamAdmin(admin.ModelAdmin):
     search_fields = ['name', 'manager']
 
 class FixtureAdmin(admin.ModelAdmin):
-    list_display = ('opponent', 'date', 'time', 'home_or_away', 'location', 'goals_for', 'goals_against', 'is_played')
-    list_filter = ('date', 'home_or_away', 'is_played')  # Allows filtering by date, home/away, and match status
+    list_display = ('opponent', 'date', 'time', 'home_or_away', 'location', 'goals_for', 'goals_against', 'match_completed')
+    list_filter = ('date', 'home_or_away', 'match_completed')  # Allows filtering by date, home/away, and match status
     search_fields = ['opponent', 'location']
 
 

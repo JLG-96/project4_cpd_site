@@ -34,7 +34,7 @@ class Fixture(models.Model):
     home_or_away = models.CharField(max_length=1, choices=HOME_OR_AWAY)  # Home/Away status
     goals_for = models.PositiveIntegerField(null=True, blank=True)  # Goals scored by CPD Yr Wyddgrug
     goals_against = models.PositiveIntegerField(null=True, blank=True)  # Goals conceded
-    is_played = models.BooleanField(default=False)  # Mark if the match has been played
+    match_completed = models.BooleanField(default=False)  # Mark if the match has been played
 
     def __str__(self):
         return f"{self.opponent} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
