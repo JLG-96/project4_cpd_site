@@ -27,7 +27,7 @@ class Fixture(models.Model):
         ('H', 'Home'),
         ('A', 'Away'),
     ]
-    opponent = models.CharField(max_length=100)  # Opposing team's name
+    opponent = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True) # Now links to a Team
     date = models.DateField()  # Match date
     time = models.TimeField()  # Kickoff time
     location = models.CharField(max_length=100)  # Match venue
@@ -37,4 +37,4 @@ class Fixture(models.Model):
     match_completed = models.BooleanField(default=False)  # Mark if the match has been played
 
     def __str__(self):
-        return f"{self.opponent} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
+        return f"{self.opponent.name if self.opponent else 'Unknown Team'} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
