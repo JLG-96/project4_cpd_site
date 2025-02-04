@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upcoming Fixtures</title>
+  </head>
+  <body>
+    <header>
+      <h1>Upcoming Fixtures</h1>
+    </header>
+
+    <section>
+      <h2>Fixtures</h2>
+      {% if upcoming_fixtures %}
+      <ul>
+        {% for fixture in upcoming_fixtures %}
+        <li>
+            {{ fixture.opponent }} 
+            {% if fixture.home_or_away == "H" %} (Home) 
+            {% else %} (Away) 
+            {% endif %}
+            - Date: {{ fixture.date }} | Time: {{ fixture.time }} | Location: {{ fixture.location }}
+        </li>
+        
+
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No upcoming fixtures available.</p>
+      {% endif %}
+    </section>
+  </body>
+</html>

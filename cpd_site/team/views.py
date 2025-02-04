@@ -41,3 +41,14 @@ def results_view(request):
     }
 
     return render(request, "team/results.html", context)
+
+
+def fixtures_view(request):
+    """View to display upcoming fixtures"""
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by('date', 'time')
+
+    context = {
+        "upcoming_fixtures": upcoming_fixtures
+    }
+
+    return render(request, "team/fixtures.html", context)
