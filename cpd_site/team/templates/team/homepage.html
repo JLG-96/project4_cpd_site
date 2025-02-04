@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPD Yr Wyddgrug - Home</title>
-</head>
-<body>
+{% extends "team/base.html" %}
+
+{% block content %}
+
     <header>
         <h1>Welcome to CPD Yr Wyddgrug Official Site</h1>
     </header>
@@ -64,5 +60,5 @@
         <h2>Manager's Comment</h2>
         <p>{{ managers_comment }}</p>
     </section>
-</body>
-</html>
+
+{% endblock %}
