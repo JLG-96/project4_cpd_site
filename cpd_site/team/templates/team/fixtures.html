@@ -1,24 +1,23 @@
-{% extends "team/base.html" %}
+{% extends "team/base.html" %} 
 
 {% block content %}
-    <header>
-        <h1>Fixtures</h1>
-    </header>
+<header>
+  <h1>Fixtures</h1>
+</header>
 
-    <section>
-        {% if upcoming_fixtures %}
-            <ul>
-                {% for fixture in upcoming_fixtures %}
-                    <li>
-                        {{ fixture.opponent }} 
-                        {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
-                        - Date: {{ fixture.date }} | Time: {{ fixture.time }} 
-                        | Location: {{ fixture.location }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No upcoming fixtures available.</p>
-        {% endif %}
-    </section>
+<section>
+  {% if upcoming_fixtures %}
+  <ul>
+    {% for fixture in upcoming_fixtures %}
+    <li>
+      {{ fixture.opponent.name }} 
+      {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
+      - Date: {{ fixture.date }} | Time: {{ fixture.time }} | Location: {{ fixture.location }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No upcoming fixtures available.</p>
+  {% endif %}
+</section>
 {% endblock %}

@@ -47,6 +47,9 @@ def fixtures_view(request):
     """View to display upcoming fixtures"""
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by('date', 'time')
 
+    #debugging print 
+    print("upcoming fixtures:", upcoming_fixtures)
+
     context = {
         "upcoming_fixtures": upcoming_fixtures
     }

@@ -18,8 +18,14 @@ class Team(models.Model):
     goals_against = models.PositiveIntegerField(default=0)  # Total goals conceded
     points = models.PositiveIntegerField(default=0)  # Total points in the league
 
+    def update_standings(self):
+        """Recalculate and update the team's league position."""
+        self.points = (self.wins * 3) + self.draws  # Win = 3pts, Draw = 1pt
+        self.games_played = self.wins + self.draws + self.losses
+        self.save()
+
     def __str__(self):
-        return self.name  # This ensures a readable name in the admin panel
+        return f"{self.name} - {self.points} pts"
 
 
 class Fixture(models.Model):
