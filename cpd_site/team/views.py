@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Team, Fixture
 
+
 def homepage(request):
     """ Fetches team details, next fixture, latest result, and league table """
     
@@ -55,3 +56,9 @@ def fixtures_view(request):
     }
 
     return render(request, "team/fixtures.html", context)
+
+
+def league_table(request):
+    # Orders teams by pointes then by goal difference.
+    teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+    return render(request, 'team/league_table.html', {'teams': teams})

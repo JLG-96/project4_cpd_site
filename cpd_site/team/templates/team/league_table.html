@@ -1,0 +1,36 @@
+{% extends "team/base.html" %}
+
+{% block content %}
+<h1>League Table</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Position</th>
+            <th>Team</th>
+            <th>Played</th>
+            <th>Wins</th>
+            <th>Draws</th>
+            <th>Losses</th>
+            <th>Goals For</th>
+            <th>Goals Against</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for team in teams %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ team.name }}</td>
+            <td>{{ team.games_played }}</td>
+            <td>{{ team.wins }}</td>
+            <td>{{ team.draws }}</td>
+            <td>{{ team.losses }}</td>
+            <td>{{ team.goals_for }}</td>
+            <td>{{ team.goals_against }}</td>
+            <td>{{ team.points }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
