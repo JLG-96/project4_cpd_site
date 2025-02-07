@@ -1,64 +1,54 @@
 {% extends "team/base.html" %}
 
 {% block content %}
-
-    <header>
-        <h1>Welcome to CPD Yr Wyddgrug Official Site</h1>
-    </header>
-
-    <!-- Upcoming Fixture Section -->
-    <section>
-        <h2>Upcoming Fixture</h2>
-        {% if upcoming_fixture %}
-            <p>
-                {{ upcoming_fixture.opponent }} 
-                {% if upcoming_fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
-            </p>
-            <p>Date: {{ upcoming_fixture.date }} | Time: {{ upcoming_fixture.time }}</p>
-            <p>Location: {{ upcoming_fixture.location }}</p>
-        {% else %}
-            <p>No upcoming fixtures.</p>
+  <header class="team-banner">
+    {% if team %}
+      <div class="banner-content">
+        {% if team.logo %}
+          <img src="{{ team.logo.url }}" alt="{{ team.name }} Logo" class="team-logo">
         {% endif %}
-    </section>
+        <div class="team-info">
+          <h1>{{ team.name }}</h1>
+          <p><strong>Manager:</strong> {{ team.manager }}</p>
+          <p><strong>Home Ground:</strong> {{ team.home_ground }}</p>
+          <p><strong>Founded:</strong> {{ team.founded_year }}</p>
+        </div>
+      </div>
+    {% else %}
+      <p>⚠️ Team information is not available.</p>
+    {% endif %}
+  </header>
 
-    <!-- Latest Result Section -->
-    <section>
-        <h2>Latest Result</h2>
-        {% if latest_result %}
-            <p>
-                {{ latest_result.opponent }} 
-                {% if latest_result.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
-            </p>
-            <p>Date: {{ latest_result.date }}</p>
-            <p>Final Score: {{ latest_result.goals_for }} - {{ latest_result.goals_against }}</p>
-        {% else %}
-            <p>No past results available.</p>
-        {% endif %}
-    </section>
+  <section class="upcoming-fixture">
+    <h2>Upcoming Fixture</h2>
+    {% if upcoming_fixture %}
+      <p>{{ upcoming_fixture.opponent }} - {{ upcoming_fixture.date }} ({{ upcoming_fixture.home_or_away }})</p>
+    {% else %}
+      <p>No upcoming fixtures.</p>
+    {% endif %}
+  </section>
 
-    <!-- League Table Section -->
-    <section>
-        <h2>League Table</h2>
-        <table border="1">
-            <tr>
-                <th>Position</th>
-                <th>Team</th>
-                <th>Points</th>
-            </tr>
-            {% for team in league_table %}
-            <tr>
-                <td>{{ team.position }}</td>
-                <td>{{ team.team }}</td>
-                <td>{{ team.points }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </section>
+  <section class="latest-result">
+    <h2>Latest Result</h2>
+    {% if latest_result %}
+      <p>{{ latest_result.opponent }} - {{ latest_result.date }} ({{ latest_result.home_or_away }})</p>
+      <p>Score: {{ latest_result.goals_for }} - {{ latest_result.goals_against }}</p>
+    {% else %}
+      <p>No recent results.</p>
+    {% endif %}
+  </section>
 
-    <!-- Manager's Comment Section -->
-    <section>
-        <h2>Manager's Comment</h2>
-        <p>{{ managers_comment }}</p>
-    </section>
+  <section class="league-table">
+    <h2>League Table Preview</h2>
+    <ul>
+      {% for team in league_table %}
+        <li>{{ team.position }}. {{ team.team }} - {{ team.points }} pts</li>
+      {% endfor %}
+    </ul>
+  </section>
 
+  <section class="managers-comment">
+    <h2>Manager’s Comments</h2>
+    <p>{{ managers_comment }}</p>
+  </section>
 {% endblock %}
