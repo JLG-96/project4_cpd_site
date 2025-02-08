@@ -1,40 +1,42 @@
 {% extends 'team/base.html' %}
-
+{% load custom_filters %}
 {% block content %}
+<h2>Upcoming Fixtures</h2>
 
-    <h2>Player Dashboard</h2>
-
-    {% if messages %}
-        {% for message in messages %}
-            <p style="color: green;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-
-    <h3>Set Availability for Upcoming Fixtures</h3>
-    <form method="POST">
+{% if upcoming_fixtures %}
+    <form method="post">
         {% csrf_token %}
         <table>
             <tr>
                 <th>Fixture</th>
-                <th>Your Availability</th>
+                <th>Date</th>
+                <th>Availability</th>
             </tr>
             {% for fixture in upcoming_fixtures %}
-                <tr>
-                    <td>{{ fixture }}</td>
-                    <td>
-                        <select name="availability_{{ fixture.id }}">
-                            <option value="yes" {% if fixture.id in available_fixtures %}selected{% endif %}>Available</option>
-                            <option value="no" {% if fixture.id in unavailable_fixtures %}selected{% endif %}>Not Available</option>
-                        </select>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">No upcoming fixtures.</td>
-                </tr>
+            <tr>
+                <td>{{ fixture.opponent }}</td>
+                <td>{{ fixture.date|date:"d/m/Y" }}</td>
+                <td>
+                    <select name="availability_{{ fixture.id }}">
+                        <option value="yes" {% if fixture_availability|get_item:fixture.id == "yes" %}selected{% endif %}>Available</option>
+                        <option value="no" {% if fixture_availability|get_item:fixture.id == "no" %}selected{% endif %}>Not Available</option>
+                    </select>
+                </td>
+            </tr>
             {% endfor %}
         </table>
         <button type="submit">Save Availability</button>
     </form>
+{% else %}
+    <p>No upcoming fixtures.</p>
+{% endif %}
+
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 {% endblock %}

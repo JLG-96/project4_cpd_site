@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Team, Fixture, Profile, ManagerPost, PlayerAvailability
 from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
+from django.contrib import messages
 
 
 def home(request):
@@ -71,6 +72,7 @@ def manager_dashboard(request):
 
 
 @login_required
+@login_required
 def player_dashboard(request):
     """View for player-specific actions, including setting availability."""
     try:
@@ -81,25 +83,26 @@ def player_dashboard(request):
     if user_profile.role != "player":
         return render(request, "team/access_denied.html")
 
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+
+    # Get existing availability for the logged-in player
+    fixture_availability = {pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)}
+
     if request.method == "POST":
-        form = PlayerAvailabilityForm(request.POST)
-        if form.is_valid():
-            fixture = form.cleaned_data["fixture"]
-            status = form.cleaned_data["status"]
-
-            # **Check if player has already submitted availability for this fixture**
-            availability, created = PlayerAvailability.objects.update_or_create(
-                player=request.user, fixture=fixture,
-                defaults={"status": status}
-            )
-
-    else:
-        form = PlayerAvailabilityForm()
-
-    availabilities = PlayerAvailability.objects.filter(player=request.user)
+        for fixture in upcoming_fixtures:
+            availability_status = request.POST.get(f"availability_{fixture.id}")
+            if availability_status:
+                PlayerAvailability.objects.update_or_create(
+                    player=request.user, fixture=fixture,
+                    defaults={"status": availability_status}
+                )
+        messages.success(request, "Availability updated successfully.")
+        return redirect("player_dashboard")
 
     return render(request, "team/player_dashboard.html", {
-        "form": form, "availabilities": availabilities})
+        "upcoming_fixtures": upcoming_fixtures,
+        "fixture_availability": fixture_availability
+    })
 
 
 @login_required
