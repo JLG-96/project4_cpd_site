@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('team.urls')),  # Homepage now loads from the team app
+    path('', include('team.urls')),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 
 
