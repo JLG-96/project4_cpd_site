@@ -2,59 +2,34 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Team, Fixture, Profile, ManagerPost, PlayerAvailability
 from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
-from django.contrib import messages
 
 
 def home(request):
     """Fetches team details, next fixture, latest result, and league table"""
-    # only displays CPD data
-    team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
+    # Fetch full league table ordered correctly
+    league_table = list(Team.objects.all().order_by('-points', '-goals_for', 'goals_against'))
 
-    # Fetch upcoming fixture (if any)
-    upcoming_fixture = Fixture.objects.filter(
-        match_completed=False).order_by('date', 'time').first()
-
-    # Fetch the latest completed match (most recent)
-    latest_result = Fixture.objects.filter(
-        match_completed=True).order_by('-date', '-time').first()
-
-    # Fetch full league table (ordered by points, goal difference, goals for)
-    league_table = Team.objects.all().order_by(
-        '-points', '-goals_for', 'goals_against')
-
-    # Extract top team and CPD position
-    top_team = league_table.first()  # First team (highest points)
-    cpd_team = league_table.filter(name="CPD Yr Wyddgrug").first()
-
-    # Find CPD position in league
-    cpd_position = list(league_table).index(cpd_team) + 1 if cpd_team else None
-
-    # Fetch top 3 teams
-    top_teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')[:3]
-
-    # Ensure CPD Yr Wyddgrug is included even if not in top 3
+    # Fetch CPD Yr Wyddgrug team and find its actual position
     cpd_team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
+    cpd_position = None
 
-    if cpd_team and cpd_team not in top_teams:
-        league_table = list(top_teams) + [cpd_team]
-    else:
-        league_table = list(top_teams)
+    if cpd_team in league_table:
+        cpd_position = league_table.index(cpd_team) + 1  # Get CPD's actual position
 
-    # Manager's latest comment (Replace with dynamic content later)
-    managers_comment = "Looking forward to the next game!"
+    # Extract top 3 teams from the league
+    top_teams = league_table[:3] if len(league_table) >= 3 else league_table
 
+    # Pass the entire league table but only display needed parts in HTML
     context = {
-        "team": team,
-        "upcoming_fixture": upcoming_fixture,
-        "latest_result": latest_result,
-        "top_team": top_team,
-        "cpd_team": cpd_team,
-        "cpd_position": cpd_position,
-        "league_table": league_table,
-        "managers_comment": managers_comment
+        "league_table": league_table,  # Full league table
+        "top_teams": top_teams,  # Top 3 teams
+        "cpd_team": cpd_team,  # CPD Yr Wyddgrug
+        "cpd_position": cpd_position,  #  CPD’s actual position
     }
 
     return render(request, "team/home.html", context)
+
+
 
 
 @login_required
@@ -80,20 +55,15 @@ def manager_dashboard(request):
 
     posts = ManagerPost.objects.all().order_by("-created_at")
 
-    # Get all upcoming fixtures
+    # Fetch upcoming fixtures & player availability **ONLY FOR UPCOMING FIXTURES**
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
-
-    # Create a dictionary mapping each fixture to player availability
-    fixture_availability = {
-        fixture: PlayerAvailability.objects.filter(fixture=fixture)
-        for fixture in upcoming_fixtures
-    }
+    player_availability = PlayerAvailability.objects.filter(fixture__match_completed=False)
 
     return render(request, "team/manager_dashboard.html", {
         "form": form,
         "posts": posts,
         "upcoming_fixtures": upcoming_fixtures,
-        "fixture_availability": fixture_availability
+        "player_availability": player_availability
     })
 
 
@@ -114,16 +84,11 @@ def player_dashboard(request):
             fixture = form.cleaned_data["fixture"]
             status = form.cleaned_data["status"]
 
-            # Update or create availability record
+            # **Check if player has already submitted availability for this fixture**
             availability, created = PlayerAvailability.objects.update_or_create(
                 player=request.user, fixture=fixture,
                 defaults={"status": status}
             )
-
-            # Add success message
-            messages.success(request, f"Your availability for {fixture} has been updated.")
-
-            return redirect("player_dashboard")  # Redirect to prevent resubmission
 
     else:
         form = PlayerAvailabilityForm()
@@ -170,5 +135,4 @@ def fixtures_view(request):
 def league_table(request):
     """View for displaying league table standings."""
     teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
-
     return render(request, 'team/league_table.html', {'teams': teams})
