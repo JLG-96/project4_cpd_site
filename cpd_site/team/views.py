@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Team, Fixture, Profile, ManagerPost, PlayerAvailability
-from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
+from django.shortcuts import render, redirect
+from .models import Team, Fixture, Profile, PlayerAvailability
+from .forms import ProfileForm
 from django.contrib import messages
 
 
