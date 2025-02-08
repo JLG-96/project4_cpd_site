@@ -38,6 +38,7 @@ def home(request):
 
     return render(request, "team/home.html", context)
 
+
 @login_required
 def manager_dashboard(request):
     """View for manager-specific actions"""
@@ -49,28 +50,24 @@ def manager_dashboard(request):
     if user_profile.role != "manager":
         return render(request, "team/access_denied.html")
 
-    # Manager can make announcements
-    if request.method == "POST":
-        form = ManagerPostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.manager = request.user
-            post.save()
-    else:
-        form = ManagerPostForm()
-
-    posts = ManagerPost.objects.all().order_by("-created_at")
-
-    # Fetch upcoming fixtures & player availability **ONLY FOR UPCOMING FIXTURES**
+    # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
-    player_availability = PlayerAvailability.objects.filter(fixture__match_completed=False)
 
-    return render(request, "team/manager_dashboard.html", {
-        "form": form,
-        "posts": posts,
+    # Create fixture availability dictionary
+    fixture_availability = {}
+    for fixture in upcoming_fixtures:
+        fixture.formatted_date = format(fixture.date, "d/m/Y")
+        fixture_availability[fixture] = {
+            "available": PlayerAvailability.objects.filter(fixture=fixture, status="yes"),
+            "not_available": PlayerAvailability.objects.filter(fixture=fixture, status="no"),
+        }
+
+    context = {
         "upcoming_fixtures": upcoming_fixtures,
-        "player_availability": player_availability
-    })
+        "fixture_availability": fixture_availability or {},  # Always ensure it's a dictionary
+    }
+
+    return render(request, "team/manager_dashboard.html", context)
 
 
 @login_required

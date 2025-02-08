@@ -1,0 +1,38 @@
+/* Navigation Bar */
+nav {
+    background-color: #333;
+    padding: 10px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a, nav ul li form button {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Style Logout Button Like Links */
+nav ul li form button {
+    padding: 0;
+    margin: 0;
+}
+
+/* Hover Effect */
+nav ul li a:hover, nav ul li form button:hover {
+    text-decoration: underline;
+}

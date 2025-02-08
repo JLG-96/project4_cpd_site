@@ -1,18 +1,12 @@
+{% extends "team/base.html" %}
 {% load custom_filters %}
 
-<nav>
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'fixtures' %}">Fixtures</a>
-    <a href="{% url 'results' %}">Results</a>
-    <a href="{% url 'league_table' %}">League Table</a>
-    <a href="{% url 'logout' %}">Logout</a>
-</nav>
-
+{% block content %}
 <h2>Upcoming Fixtures</h2>
 {% if upcoming_fixtures %}
     {% for fixture in upcoming_fixtures %}
-        <h3>{{ fixture }}</h3>
-        
+        <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
+
         <p><strong>Available Players:</strong></p>
         <ul>
             {% for player in fixture_availability|get_item:fixture %}
@@ -38,3 +32,4 @@
 {% else %}
     <p>No upcoming fixtures.</p>
 {% endif %}
+{% endblock %}
