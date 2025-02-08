@@ -1,72 +1,48 @@
-{% extends "team/base.html" %} {% block content %}
-<header class="team-banner">
-  {% if team %}
-  <div class="banner-content">
-    {% if team.logo %}
-    <img
-      src="{{ team.logo.url }}"
-      alt="{{ team.name }} Logo"
-      class="team-logo"
-    />
-    {% endif %}
-    <div class="team-info">
-      <h1>{{ team.name }}</h1>
-      <p><strong>Manager:</strong> {{ team.manager }}</p>
-      <p><strong>Home Ground:</strong> {{ team.home_ground }}</p>
-      <p><strong>Founded:</strong> {{ team.founded_year }}</p>
-    </div>
-  </div>
-  {% else %}
-  <p>Team information is not available.</p>
-  {% endif %}
-</header>
+{% extends "team/base.html" %}
+{% block content %}
 
-<section class="upcoming-fixture">
-    <h2>Upcoming Fixture</h2>
-    {% if upcoming_fixture %}
-      <p>
-        {{ upcoming_fixture.opponent }} - {{ upcoming_fixture.date }}
-        {% if upcoming_fixture.home_or_away == "H" %}
-          (Home)
-        {% else %}
-          (Away)
-        {% endif %}
-      </p>
-    {% else %}
-      <p>No upcoming fixtures.</p>
-    {% endif %}
-  </section>
-  
+<!-- Club Banner -->
+<div class="club-banner">
+    <img src="{{ team.logo.url }}" alt="{{ team.name }} Logo" class="club-logo">
+    <h1>{{ team.name }}</h1>
+    <p>Manager: {{ team.manager }}</p>
+    <p>Home Ground: {{ team.home_ground }}</p>
+    <p>Founded: {{ team.founded_year }}</p>
+</div>
 
-<section class="league-preview">
-  <h2>League Table Preview</h2>
-  <table>
+<!-- Upcoming Fixture Section -->
+<h2>Upcoming Fixture</h2>
+{% if upcoming_fixture %}
+    <p><strong>{{ team.name }} vs {{ upcoming_fixture.opponent.name }}</strong></p>
+    <p>Date: {{ upcoming_fixture.date }} | Time: {{ upcoming_fixture.time }}</p>
+    <p>Location: {{ upcoming_fixture.location }}</p>
+{% else %}
+    <p>No upcoming fixtures.</p>
+{% endif %}
+
+<!-- League Table Preview -->
+<h2>League Table Preview</h2>
+<table>
     <thead>
-      <tr>
-        <th>Pos</th>
-        <th>Team</th>
-        <th>Pts</th>
-      </tr>
+        <tr>
+            <th>Pos</th>
+            <th>Team</th>
+            <th>Pts</th>
+        </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>{{ top_team.name }}</td>
-        <td><strong>{{ top_team.points }}</strong></td>
-      </tr>
-      <tr class="highlight">
-        <td>{{ cpd_position }}</td>
-        <td>
-          <strong style="text-transform: uppercase">{{ cpd_team.name }}</strong>
-        </td>
-        <td><strong>{{ cpd_team.points }}</strong></td>
-      </tr>
+        {% for t in league_table %}
+            <tr {% if t.name == "CPD Yr Wyddgrug" %} style="font-weight: bold;" {% endif %}>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ t.name }}</td>
+                <td>{{ t.points }}</td>
+            </tr>
+        {% endfor %}
     </tbody>
-  </table>
-</section>
+</table>
 
-<section class="managers-comment">
-  <h2>Manager’s Comments</h2>
-  <p>{{ managers_comment }}</p>
-</section>
+<!-- Manager's Comments -->
+<h2>Manager’s Comments</h2>
+<p>{{ managers_comment }}</p>
+
 {% endblock %}

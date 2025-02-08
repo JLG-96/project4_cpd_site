@@ -7,7 +7,8 @@ from django.contrib import messages
 
 def home(request):
     """Fetches team details, next fixture, latest result, and league table"""
-    team = Team.objects.first()
+    # only displays CPD data
+    team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
 
     # Fetch upcoming fixture (if any)
     upcoming_fixture = Fixture.objects.filter(
