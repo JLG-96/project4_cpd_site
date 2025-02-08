@@ -1,10 +1,10 @@
 from django.urls import path
-from .views import homepage, results_view, fixtures_view, league_table
+from .views import home, results_view, fixtures_view, league_table
 from .views import manager_dashboard, player_dashboard, create_profile
 
 
 urlpatterns = [
-    path('', homepage, name='home'),
+    path('', home, name='home'),
     path('results/', results_view, name='results'), 
     path('fixtures/', fixtures_view, name='fixtures'),
     path('table/', league_table, name='league_table'),

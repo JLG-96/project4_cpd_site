@@ -4,83 +4,8 @@ from .models import Team, Fixture, Profile, ManagerPost, PlayerAvailability
 from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
 
 
-@login_required
-def manager_dashboard(request):
-    """View for manager-specific actions."""
-    try:
-        user_profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        return redirect("create_profile")
-    if user_profile.role != "manager":
-        return render(request, "team/access_denied.html")
-
-    if request.method == "POST":
-        form = ManagerPostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.manager = request.user
-            post.save()
-    else:
-        form = ManagerPostForm()
-
-    posts = ManagerPost.objects.all().order_by("-created_at")
-
-    return render(request, "team/manager_dashboard.html", {"form": form, "posts": posts})
-
-
-@login_required
-def player_dashboard(request):
-    """View for player-specific actions."""
-    user_profile = request.user.profile
-
-    if user_profile.role != "player":
-        return render(request, "team/access_denied.html")
-
-    if request.method == "POST":
-        form = PlayerAvailabilityForm(request.POST)
-        if form.is_valid():
-            availability = form.save(commit=False)
-            availability.player = request.user
-            availability.save()
-
-    else:
-        form = PlayerAvailabilityForm()
-
-    availabilities = PlayerAvailability.objects.filter(player=request.user)
-
-    return render(
-        request,
-        "team/player_dashboard.html",
-        {"form": form, "availabilities": availabilities},
-    )
-
-
-@login_required
-def create_profile(request):
-    """Allows users to create a profile if they don’t have one."""
-
-    if Profile.objects.filter(user=request.user).exists():
-        return redirect("homepage")  # Redirect if profile already exists
-
-    if request.method == "POST":
-        form = ProfileForm(request.POST)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = request.user
-            profile.save()
-            # Redirect to the correct dashboard based on role
-            if profile.role == "manager":
-                return redirect("manager_dashboard")
-            return redirect("player_dashboard")
-    else:
-        form = ProfileForm()
-
-    return render(request, "team/create_profile.html", {"form": form})
-
-
-def homepage(request):
-    """ Fetches team details, next fixture, latest result, and league table """
-
+def home(request):
+    """Fetches team details, next fixture, latest result, and league table"""
     team = Team.objects.first()
 
     # Fetch upcoming fixture (if any)
@@ -94,7 +19,7 @@ def homepage(request):
     # Fetch full league table (ordered by points, goal difference, goals for)
     league_table = Team.objects.all().order_by(
         '-points', '-goals_for', 'goals_against')
-    
+
     # Extract top team and CPD position
     top_team = league_table.first()  # First team (highest points)
     cpd_team = league_table.filter(name="CPD Yr Wyddgrug").first()
@@ -127,7 +52,98 @@ def homepage(request):
         "managers_comment": managers_comment
     }
 
-    return render(request, "team/homepage.html", context)
+    return render(request, "team/home.html", context)
+
+
+@login_required
+def manager_dashboard(request):
+    """View for manager-specific actions"""
+    try:
+        user_profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        return redirect("create_profile")
+
+    if user_profile.role != "manager":
+        return render(request, "team/access_denied.html")
+
+    # Manager can make announcements
+    if request.method == "POST":
+        form = ManagerPostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.manager = request.user
+            post.save()
+    else:
+        form = ManagerPostForm()
+
+    posts = ManagerPost.objects.all().order_by("-created_at")
+
+    # Get all upcoming fixtures
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+
+    # Create a dictionary mapping each fixture to player availability
+    fixture_availability = {
+        fixture: PlayerAvailability.objects.filter(fixture=fixture)
+        for fixture in upcoming_fixtures
+    }
+
+    return render(request, "team/manager_dashboard.html", {
+        "form": form,
+        "posts": posts,
+        "upcoming_fixtures": upcoming_fixtures,
+        "fixture_availability": fixture_availability
+    })
+
+
+@login_required
+def player_dashboard(request):
+    """View for player-specific actions, including setting availability."""
+    try:
+        user_profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        return redirect("create_profile")
+
+    if user_profile.role != "player":
+        return render(request, "team/access_denied.html")
+
+    if request.method == "POST":
+        form = PlayerAvailabilityForm(request.POST)
+        if form.is_valid():
+            fixture = form.cleaned_data["fixture"]
+            status = form.cleaned_data["status"]
+
+            # **Check if player has already submitted availability for this fixture**
+            availability, created = PlayerAvailability.objects.update_or_create(
+                player=request.user, fixture=fixture,
+                defaults={"status": status}
+            )
+
+    else:
+        form = PlayerAvailabilityForm()
+
+    availabilities = PlayerAvailability.objects.filter(player=request.user)
+
+    return render(request, "team/player_dashboard.html", {
+        "form": form, "availabilities": availabilities})
+
+
+@login_required
+def create_profile(request):
+    """Allows users to create a profile if they don’t have one."""
+    if Profile.objects.filter(user=request.user).exists():
+        return redirect("home")
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.user = request.user
+            profile.save()
+            return redirect("manager_dashboard" if profile.role == "manager" else "player_dashboard")
+    else:
+        form = ProfileForm()
+
+    return render(request, "team/create_profile.html", {"form": form})
 
 
 def results_view(request):
@@ -135,28 +151,16 @@ def results_view(request):
     past_fixtures = Fixture.objects.filter(
         match_completed=True).order_by('-date', '-time')
 
-    context = {
-        "past_fixtures": past_fixtures
-    }
-
-    return render(request, "team/results.html", context)
+    return render(request, "team/results.html", {"past_fixtures": past_fixtures})
 
 
 def fixtures_view(request):
-    """View to display upcoming fixtures"""
-    upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by('date', 'time')
-
-    context = {
-        "upcoming_fixtures": upcoming_fixtures
-    }
-
-    return render(request, "team/fixtures.html", context)
+    """View to display only upcoming fixtures."""
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    return render(request, "team/fixtures.html", {"upcoming_fixtures": upcoming_fixtures})
 
 
 def league_table(request):
-    """ Orders teams by points then by goal difference. """
-    teams = Team.objects.all().order_by(
-        '-points', '-goals_for', 'goals_against')
-
+    """View for displaying league table standings."""
+    teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
     return render(request, 'team/league_table.html', {'teams': teams})

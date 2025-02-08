@@ -11,7 +11,7 @@ class ManagerPostForm(forms.ModelForm):
 class PlayerAvailabilityForm(forms.ModelForm):
     class Meta:
         model = PlayerAvailability
-        fields = ["fixture", "available"]
+        fields = ["player", "fixture", "status"]
 
 
 class ProfileForm(forms.ModelForm):

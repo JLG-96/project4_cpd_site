@@ -1,22 +1,27 @@
-{% extends "team/base.html" %}
+{% load custom_filters %}
 
-{% block content %}
-<h2>Manager Dashboard</h2>
+<h2>Upcoming Fixtures</h2>
+{% if upcoming_fixtures %}
+    {% for fixture in upcoming_fixtures %}
+        <h3>{{ fixture }}</h3>
+        <p><strong>Available Players:</strong></p>
+        <ul>
+            {% for player in fixture_availability|get_item:fixture %}
+                <li>{{ player.player.username }}</li>
+            {% empty %}
+                <li>No players have confirmed availability yet.</li>
+            {% endfor %}
+        </ul>
 
-<h3>Create a Post</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Post</button>
-</form>
-
-<h3>Recent Posts</h3>
-{% for post in posts %}
-    <div>
-        <p><strong>{{ post.manager }}</strong> ({{ post.created_at|date:"M d, Y H:i" }})</p>
-        <p>{{ post.content }}</p>
-    </div>
-{% empty %}
-    <p>No posts yet.</p>
-{% endfor %}
-{% endblock %}
+        <p><strong>Unavailable Players:</strong></p>
+        <ul>
+            {% for player in fixture_availability[fixture].not_available %}
+                <li>{{ player.player.username }}</li>
+            {% empty %}
+                <li>No players have set availability yet.</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% else %}
+    <p>No upcoming fixtures.</p>
+{% endif %}
