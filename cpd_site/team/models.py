@@ -4,10 +4,7 @@ from django.contrib.auth.models import User
 
 class Team(models.Model):
     name = models.CharField(max_length=100, default="CPD Yr Wyddgrug")
-    manager = models.CharField(max_length=100)
-    home_ground = models.CharField(max_length=100)
-    founded_year = models.PositiveIntegerField()
-    logo = models.ImageField(upload_to="team_logos/", blank=True, null=True)
+    logo = models.ImageField(upload_to='team_logos/', blank=True, null=True)
 
     games_played = models.PositiveIntegerField(default=0)
     wins = models.PositiveIntegerField(default=0)

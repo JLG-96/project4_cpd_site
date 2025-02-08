@@ -4,11 +4,10 @@ from .models import Team, Fixture, Profile
 
 # Register your models here.
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'manager', 
-                    'home_ground', 'founded_year', 'games_played',
+    list_display = ('name', 'games_played',
                     'wins', 'draws', 'losses', 'goals_for',
                     'goals_against', 'points', 'logo')
-    search_fields = ['name', 'manager']
+    search_fields = ['name']
 
 
 class FixtureAdmin(admin.ModelAdmin):

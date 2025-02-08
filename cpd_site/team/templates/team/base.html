@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPD Yr Wyddgrug</title>
+</head>
+<body>
+    <nav style="background-color: #333; padding: 10px;">
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; gap: 15px;">
+            <li><a href="{% url 'home' %}" style="color: white; text-decoration: none;">Home</a></li>
+            <li><a href="{% url 'fixtures' %}" style="color: white; text-decoration: none;">Fixtures</a></li>
+            <li><a href="{% url 'results' %}" style="color: white; text-decoration: none;">Results</a></li>
+            <li><a href="{% url 'league_table' %}" style="color: white; text-decoration: none;">League Table</a></li>
+    
+            {% if request.user.is_authenticated %}
+                {% if request.user.profile.role == "manager" %}
+                    <li><a href="{% url 'manager_dashboard' %}" style="color: white; text-decoration: none;">Manager Dashboard</a></li>
+                {% elif request.user.profile.role == "player" %}
+                    <li><a href="{% url 'player_dashboard' %}" style="color: white; text-decoration: none;">Player Dashboard</a></li>
+                {% endif %}
+                <li><a href="{% url 'logout' %}" style="color: white; text-decoration: none;">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}" style="color: white; text-decoration: none;">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+
+    {% block content %}
+    <!-- Content will be inserted here -->
+    {% endblock %}
+
+</body>
+</html>

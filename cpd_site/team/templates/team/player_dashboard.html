@@ -1,16 +1,22 @@
-{% extends 'base.html' %}
-{% block title %}Player Dashboard{% endblock %}
+{% extends 'team/base.html' %}
 
 {% block content %}
-<h2>Your Availability</h2>
 
-{% if upcoming_fixtures %}
+    <h2>Player Dashboard</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <h3>Set Availability for Upcoming Fixtures</h3>
     <form method="POST">
         {% csrf_token %}
         <table>
             <tr>
                 <th>Fixture</th>
-                <th>Availability</th>
+                <th>Your Availability</th>
             </tr>
             {% for fixture in upcoming_fixtures %}
                 <tr>
@@ -22,12 +28,13 @@
                         </select>
                     </td>
                 </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No upcoming fixtures.</td>
+                </tr>
             {% endfor %}
         </table>
         <button type="submit">Save Availability</button>
     </form>
-{% else %}
-    <p>No upcoming fixtures.</p>
-{% endif %}
 
 {% endblock %}

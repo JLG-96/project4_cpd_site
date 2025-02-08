@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Team, Fixture, Profile, ManagerPost, PlayerAvailability
 from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
+from django.contrib import messages
 
 
 def home(request):
@@ -97,7 +98,7 @@ def manager_dashboard(request):
 
 @login_required
 def player_dashboard(request):
-    """Allows players to set and update availability for upcoming fixtures."""
+    """View for player-specific actions, including setting availability."""
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
@@ -106,27 +107,30 @@ def player_dashboard(request):
     if user_profile.role != "player":
         return render(request, "team/access_denied.html")
 
-    player = request.user
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
-    player_availability = {pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=player)}
-
     if request.method == "POST":
-        for fixture in upcoming_fixtures:
-            availability_status = request.POST.get(f"availability_{fixture.id}")
-            if availability_status in ["yes", "no"]:
-                PlayerAvailability.objects.update_or_create(
-                    player=player, fixture=fixture, defaults={"status": availability_status}
-                )
+        form = PlayerAvailabilityForm(request.POST)
+        if form.is_valid():
+            fixture = form.cleaned_data["fixture"]
+            status = form.cleaned_data["status"]
 
-        return redirect("player_dashboard")
+            # Update or create availability record
+            availability, created = PlayerAvailability.objects.update_or_create(
+                player=request.user, fixture=fixture,
+                defaults={"status": status}
+            )
 
-    return render(
-        request, "team/player_dashboard.html", {
-            "upcoming_fixtures": upcoming_fixtures,
-            "available_fixtures": [f_id for f_id, status in player_availability.items() if status == "yes"],
-            "unavailable_fixtures": [f_id for f_id, status in player_availability.items() if status == "no"]
-        }
-    )
+            # Add success message
+            messages.success(request, f"Your availability for {fixture} has been updated.")
+
+            return redirect("player_dashboard")  # Redirect to prevent resubmission
+
+    else:
+        form = PlayerAvailabilityForm()
+
+    availabilities = PlayerAvailability.objects.filter(player=request.user)
+
+    return render(request, "team/player_dashboard.html", {
+        "form": form, "availabilities": availabilities})
 
 
 @login_required
@@ -165,4 +169,5 @@ def fixtures_view(request):
 def league_table(request):
     """View for displaying league table standings."""
     teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+
     return render(request, 'team/league_table.html', {'teams': teams})
