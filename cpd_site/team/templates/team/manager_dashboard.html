@@ -3,13 +3,14 @@
 
 {% block content %}
 <h2>Upcoming Fixtures</h2>
+
 {% if upcoming_fixtures %}
     {% for fixture in upcoming_fixtures %}
         <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
 
         <p><strong>Available Players:</strong></p>
         <ul>
-            {% for player in fixture_availability|get_item:fixture %}
+            {% for player in fixture_availability|get_item:fixture.id %}
                 {% if player.status == "yes" %}
                     <li>{{ player.player.username }}</li>
                 {% endif %}
@@ -20,7 +21,7 @@
 
         <p><strong>Unavailable Players:</strong></p>
         <ul>
-            {% for player in fixture_availability|get_item:fixture %}
+            {% for player in fixture_availability|get_item:fixture.id %}
                 {% if player.status == "no" %}
                     <li>{{ player.player.username }}</li>
                 {% endif %}

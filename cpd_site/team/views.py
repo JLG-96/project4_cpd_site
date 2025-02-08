@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .models import Team, Fixture, Profile, PlayerAvailability
-from .forms import ProfileForm
+from .forms import ProfileForm, ManagerPostForm, ManagerPost
 from django.contrib import messages
 
 
@@ -51,27 +51,35 @@ def manager_dashboard(request):
     if user_profile.role != "manager":
         return render(request, "team/access_denied.html")
 
-    # Fetch upcoming fixtures
+    if request.method == "POST":
+        form = ManagerPostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.manager = request.user
+            post.save()
+    else:
+        form = ManagerPostForm()
+
+    posts = ManagerPost.objects.all().order_by("-created_at")
+
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
 
-    # Create fixture availability dictionary
     fixture_availability = {}
     for fixture in upcoming_fixtures:
-        fixture.formatted_date = format(fixture.date, "d/m/Y")
-        fixture_availability[fixture] = {
-            "available": PlayerAvailability.objects.filter(fixture=fixture, status="yes"),
-            "not_available": PlayerAvailability.objects.filter(fixture=fixture, status="no"),
-        }
+        fixture_availability[fixture.id] = list(PlayerAvailability.objects.filter(fixture=fixture))
 
-    context = {
+    # Debugging: Print data to console
+    print("Upcoming Fixtures:", upcoming_fixtures)
+    print("Fixture Availability:", fixture_availability)
+
+    return render(request, "team/manager_dashboard.html", {
+        "form": form,
+        "posts": posts,
         "upcoming_fixtures": upcoming_fixtures,
-        "fixture_availability": fixture_availability or {},  # Always ensure it's a dictionary
-    }
-
-    return render(request, "team/manager_dashboard.html", context)
+        "fixture_availability": fixture_availability
+    })
 
 
-@login_required
 @login_required
 def player_dashboard(request):
     """View for player-specific actions, including setting availability."""

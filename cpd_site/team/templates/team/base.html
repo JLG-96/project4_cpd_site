@@ -1,20 +1,20 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CPD Yr Wyddgrug</title>
+    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+
     <nav>
         <ul>
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
             <li><a href="{% url 'results' %}">Results</a></li>
             <li><a href="{% url 'league_table' %}">League Table</a></li>
-    
             {% if request.user.is_authenticated %}
                 {% if request.user.profile.role == "manager" %}
                     <li><a href="{% url 'manager_dashboard' %}">Manager Dashboard</a></li>
@@ -32,7 +32,11 @@
             {% endif %}
         </ul>
     </nav>
-    {% block content %}
-    {% endblock %}
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
 </body>
 </html>
