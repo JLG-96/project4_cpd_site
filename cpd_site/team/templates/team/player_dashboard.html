@@ -1,0 +1,13 @@
+<h2>Player Dashboard</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Availability</button>
+</form>
+
+<h3>Your Availability</h3>
+<ul>
+    {% for availability in availabilities %}
+        <li>{{ availability.fixture }} - {{ availability.available|yesno:"Available,Unavailable" }}</li>
+    {% endfor %}
+</ul>

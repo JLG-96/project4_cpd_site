@@ -17,21 +17,26 @@
     </div>
   </div>
   {% else %}
-  <p>⚠️ Team information is not available.</p>
+  <p>Team information is not available.</p>
   {% endif %}
 </header>
 
 <section class="upcoming-fixture">
-  <h2>Upcoming Fixture</h2>
-  {% if upcoming_fixture %}
-  <p>
-    {{ upcoming_fixture.opponent }} - {{ upcoming_fixture.date }} ({{
-    upcoming_fixture.home_or_away }})
-  </p>
-  {% else %}
-  <p>No upcoming fixtures.</p>
-  {% endif %}
-</section>
+    <h2>Upcoming Fixture</h2>
+    {% if upcoming_fixture %}
+      <p>
+        {{ upcoming_fixture.opponent }} - {{ upcoming_fixture.date }}
+        {% if upcoming_fixture.home_or_away == "H" %}
+          (Home)
+        {% else %}
+          (Away)
+        {% endif %}
+      </p>
+    {% else %}
+      <p>No upcoming fixtures.</p>
+    {% endif %}
+  </section>
+  
 
 <section class="league-preview">
   <h2>League Table Preview</h2>

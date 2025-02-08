@@ -1,0 +1,13 @@
+<h2>Manager Dashboard</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post</button>
+</form>
+
+<h3>Latest Updates</h3>
+<ul>
+    {% for post in posts %}
+        <li><strong>{{ post.title }}</strong> - {{ post.created_at }}<br>{{ post.content }}</li>
+    {% endfor %}
+</ul>
