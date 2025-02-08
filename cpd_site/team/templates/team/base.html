@@ -19,7 +19,14 @@
                 {% elif request.user.profile.role == "player" %}
                     <li><a href="{% url 'player_dashboard' %}" style="color: white; text-decoration: none;">Player Dashboard</a></li>
                 {% endif %}
-                <li><a href="{% url 'logout' %}" style="color: white; text-decoration: none;">Logout</a></li>
+                <li>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-size: inherit; padding: 0; text-decoration: none; font-family: inherit;">
+                            Logout
+                        </button>
+                    </form>
+                </li>
             {% else %}
                 <li><a href="{% url 'login' %}" style="color: white; text-decoration: none;">Login</a></li>
             {% endif %}
