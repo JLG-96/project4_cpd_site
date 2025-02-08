@@ -4,10 +4,13 @@
 {% if upcoming_fixtures %}
     {% for fixture in upcoming_fixtures %}
         <h3>{{ fixture }}</h3>
+        
         <p><strong>Available Players:</strong></p>
         <ul>
             {% for player in fixture_availability|get_item:fixture %}
-                <li>{{ player.player.username }}</li>
+                {% if player.status == "yes" %}
+                    <li>{{ player.player.username }}</li>
+                {% endif %}
             {% empty %}
                 <li>No players have confirmed availability yet.</li>
             {% endfor %}
@@ -15,8 +18,10 @@
 
         <p><strong>Unavailable Players:</strong></p>
         <ul>
-            {% for player in fixture_availability[fixture].not_available %}
-                <li>{{ player.player.username }}</li>
+            {% for player in fixture_availability|get_item:fixture %}
+                {% if player.status == "no" %}
+                    <li>{{ player.player.username }}</li>
+                {% endif %}
             {% empty %}
                 <li>No players have set availability yet.</li>
             {% endfor %}
