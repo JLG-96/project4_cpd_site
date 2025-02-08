@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Team, Fixture, Profile, ManagerPost, PlayerAvailability
 from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
 
@@ -11,7 +11,6 @@ def manager_dashboard(request):
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         return redirect("create_profile")
-    
     if user_profile.role != "manager":
         return render(request, "team/access_denied.html")
 
@@ -32,11 +31,8 @@ def manager_dashboard(request):
 @login_required
 def player_dashboard(request):
     """View for player-specific actions."""
-    try:
-        user_profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        return redirect("create_profile")
-    
+    user_profile = request.user.profile
+
     if user_profile.role != "player":
         return render(request, "team/access_denied.html")
 
@@ -46,12 +42,17 @@ def player_dashboard(request):
             availability = form.save(commit=False)
             availability.player = request.user
             availability.save()
+
     else:
         form = PlayerAvailabilityForm()
 
     availabilities = PlayerAvailability.objects.filter(player=request.user)
 
-    return render(request, "team/player_dashboard.html", {"form": form, "availabilities": availabilities})
+    return render(
+        request,
+        "team/player_dashboard.html",
+        {"form": form, "availabilities": availabilities},
+    )
 
 
 @login_required

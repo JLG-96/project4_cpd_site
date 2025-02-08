@@ -117,10 +117,19 @@ class ManagerPost(models.Model):
 
 
 class PlayerAvailability(models.Model):
+    AVAILABILITY_CHOICES = [
+        ('yes', 'Available'),
+        ('no', 'Not Available'),
+    ]
+
     player = models.ForeignKey(User, on_delete=models.CASCADE)
-    fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
-    available = models.BooleanField()
+    training_session = models.ForeignKey(ManagerPost, on_delete=models.CASCADE, null=True, blank=True)
+    match_fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE, null=True, blank=True)
+    status = models.CharField(max_length=3, choices=AVAILABILITY_CHOICES)
 
     def __str__(self):
-        return f"{self.player.username} - {
-            'Available' if self.available else 'Unavailable'}"
+        if self.training_session:
+            return f"{self.player} - Training ({self.training_session}) - {self.status}"
+        elif self.match_fixture:
+            return f"{self.player} - Match ({self.match_fixture}) - {self.status}"
+        return f"{self.player} - {self.status}"
