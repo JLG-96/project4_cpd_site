@@ -15,11 +15,16 @@ def homepage(request):
     latest_result = Fixture.objects.filter(
         match_completed=True).order_by('-date', '-time').first()
 
-    # Example league table (Replace with real data later)
-    league_table = [
-        {"position": 1, "team": "Top Team FC", "points": 50},
-        {"position": 2, "team": "CPD Yr Wyddgrug", "points": 48},
-    ]
+    # Fetch full league table (ordered by points, goal difference, goals for)
+    league_table = Team.objects.all().order_by(
+        '-points', '-goals_for', 'goals_against')
+    
+    # Extract top team and CPD postition
+    top_team = league_table.first()  # First team (highest points)
+    cpd_team = league_table.filter(name="CPD Yr Wyddgrug").first()
+
+    # Find CPD position in league
+    cpd_position = list(league_table).index(cpd_team) + 1 if cpd_team else None
 
     # Manager's latest comment (Replace with dynamic content later)
     managers_comment = "Looking forward to the next game!"
@@ -27,7 +32,10 @@ def homepage(request):
     context = {
         "team": team,
         "upcoming_fixture": upcoming_fixture,
-        "latest_result": latest_result,  
+        "latest_result": latest_result,
+        "top_team": top_team,
+        "cpd_team": cpd_team,
+        "cpd_position": cpd_position,
         "league_table": league_table,
         "managers_comment": managers_comment
     }
