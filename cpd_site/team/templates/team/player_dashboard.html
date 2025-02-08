@@ -1,19 +1,33 @@
-{% extends "team/base.html" %} 
+{% extends 'base.html' %}
+{% block title %}Player Dashboard{% endblock %}
 
 {% block content %}
-<h2>Player Dashboard</h2>
+<h2>Your Availability</h2>
 
-<h3>Set Availability</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit Availability</button>
-</form>
+{% if upcoming_fixtures %}
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <th>Fixture</th>
+                <th>Availability</th>
+            </tr>
+            {% for fixture in upcoming_fixtures %}
+                <tr>
+                    <td>{{ fixture }}</td>
+                    <td>
+                        <select name="availability_{{ fixture.id }}">
+                            <option value="yes" {% if fixture.id in available_fixtures %}selected{% endif %}>Available</option>
+                            <option value="no" {% if fixture.id in unavailable_fixtures %}selected{% endif %}>Not Available</option>
+                        </select>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Save Availability</button>
+    </form>
+{% else %}
+    <p>No upcoming fixtures.</p>
+{% endif %}
 
-<h3>My Availability</h3>
-{% for availability in availabilities %}
-    <p>{{ availability.training_session.content }} - <strong>{{ availability.get_status_display }}</strong></p>
-{% empty %}
-    <p>No availability set yet.</p>
-{% endfor %}
 {% endblock %}

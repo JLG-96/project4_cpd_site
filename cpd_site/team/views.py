@@ -97,7 +97,7 @@ def manager_dashboard(request):
 
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions, including setting availability."""
+    """Allows players to set and update availability for upcoming fixtures."""
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
@@ -106,25 +106,27 @@ def player_dashboard(request):
     if user_profile.role != "player":
         return render(request, "team/access_denied.html")
 
+    player = request.user
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    player_availability = {pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=player)}
+
     if request.method == "POST":
-        form = PlayerAvailabilityForm(request.POST)
-        if form.is_valid():
-            fixture = form.cleaned_data["fixture"]
-            status = form.cleaned_data["status"]
+        for fixture in upcoming_fixtures:
+            availability_status = request.POST.get(f"availability_{fixture.id}")
+            if availability_status in ["yes", "no"]:
+                PlayerAvailability.objects.update_or_create(
+                    player=player, fixture=fixture, defaults={"status": availability_status}
+                )
 
-            # **Check if player has already submitted availability for this fixture**
-            availability, created = PlayerAvailability.objects.update_or_create(
-                player=request.user, fixture=fixture,
-                defaults={"status": status}
-            )
+        return redirect("player_dashboard")
 
-    else:
-        form = PlayerAvailabilityForm()
-
-    availabilities = PlayerAvailability.objects.filter(player=request.user)
-
-    return render(request, "team/player_dashboard.html", {
-        "form": form, "availabilities": availabilities})
+    return render(
+        request, "team/player_dashboard.html", {
+            "upcoming_fixtures": upcoming_fixtures,
+            "available_fixtures": [f_id for f_id, status in player_availability.items() if status == "yes"],
+            "unavailable_fixtures": [f_id for f_id, status in player_availability.items() if status == "no"]
+        }
+    )
 
 
 @login_required
