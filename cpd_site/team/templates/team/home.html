@@ -1,51 +1,54 @@
-{% extends 'team/base.html' %}
-
+{% extends "team/base.html" %}
 {% block content %}
-    <div class="banner">
-        <img src="{{ team.logo.url }}" alt="Club Logo">
-        <h1>CPD Yr Wyddgrug</h1>
-        <p>Manager: {{ manager_name }}</p>
-        <p>Home Ground: {{ home_ground }}</p>
-        <p>Founded: {{ founded_year }}</p>
+<div class="container">
+    <!-- Club Banner -->
+    <div class="club-banner" style="text-align: center; padding: 20px;">
+        <img src="{{ team.logo.url }}" alt="Club Logo" style="max-width: 150px;">
+        <h1>{{ team.name }}</h1>
+        <p><strong>Manager:</strong> Joel Thomas</p>
+        <p><strong>Home Ground:</strong> Gwernymynydd Village Hall</p>
+        <p><strong>Founded:</strong> 2023</p>
     </div>
 
-    <h2>Upcoming Fixture</h2>
-    {% if upcoming_fixture %}
-        <p>{{ upcoming_fixture }}</p>
-    {% else %}
-        <p>No upcoming fixtures.</p>
-    {% endif %}
+    <!-- Upcoming Fixture Section -->
+    <div class="section">
+        <h2>Upcoming Fixture</h2>
+        {% if upcoming_fixture %}
+            <p><strong>{{ upcoming_fixture.date }} - {{ upcoming_fixture.time }}</strong></p>
+            <p><strong>Opponent:</strong> {{ upcoming_fixture.opponent.name }}</p>
+            <p><strong>Location:</strong> {{ upcoming_fixture.location }}</p>
+        {% else %}
+            <p>No upcoming fixtures.</p>
+        {% endif %}
+    </div>
 
-    <h2>League Table</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Pos</th>
-                <th>Team</th>
-                <th>Pts</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Show only the top 3 teams -->
-            {% for team in top_teams %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ team.name }}</td>
-                <td>{{ team.points }}</td>
-            </tr>
-            {% endfor %}
-    
-            <!-- Ensure CPD is shown in the correct position -->
-            {% if cpd_team %}
-            <tr style="font-weight: bold;">
-                <td>{{ cpd_position }}</td>
-                <td>{{ cpd_team.name }}</td>
-                <td>{{ cpd_team.points }}</td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-    
-    <h2>Manager’s Comments</h2>
-    <p>{{ managers_comment }}</p>
+    <!-- League Table Preview (ALREADY WORKING, DON'T CHANGE) -->
+    <div class="section">
+        <h2>League Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in league_preview %}
+                    <tr {% if team.name == "CPD Yr Wyddgrug" %} style="font-weight: bold;" {% endif %}>
+                        <td>{{ team.position }}</td>
+                        <td>{{ team.name }}</td>
+                        <td>{{ team.points }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Manager's Comment Section -->
+    <div class="section">
+        <h2>Manager’s Comments</h2>
+        <p>Looking forward to the next game!</p>
+    </div>
+</div>
 {% endblock %}

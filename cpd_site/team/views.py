@@ -5,32 +5,38 @@ from .forms import ManagerPostForm, PlayerAvailabilityForm, ProfileForm
 
 
 def home(request):
-    """Fetches team details, next fixture, latest result, and league table"""
-    # Fetch full league table ordered correctly
-    league_table = list(Team.objects.all().order_by('-points', '-goals_for', 'goals_against'))
+    """Fetches team details, upcoming fixture, and league standings."""
 
-    # Fetch CPD Yr Wyddgrug team and find its actual position
+    # Always fetch CPD Yr Wyddgrug
+    team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
+
+    # Fetch upcoming fixture
+    upcoming_fixture = Fixture.objects.filter(
+        match_completed=False
+    ).order_by('date', 'time').first()
+
+    # Fetch league standings (ALREADY WORKING, DON'T CHANGE)
+    league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+
+    # Find CPD's actual position in the league
     cpd_team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
-    cpd_position = None
+    cpd_position = list(league_table).index(cpd_team) + 1 if cpd_team else None
 
-    if cpd_team in league_table:
-        cpd_position = league_table.index(cpd_team) + 1  # Get CPD's actual position
+    # Get top 3 teams
+    top_teams = list(league_table[:3])
 
-    # Extract top 3 teams from the league
-    top_teams = league_table[:3] if len(league_table) >= 3 else league_table
+    # Ensure CPD is included at the correct position
+    league_preview = [{"position": i + 1, "name": t.name, "points": t.points} for i, t in enumerate(top_teams)]
+    if cpd_team and cpd_team not in top_teams:
+        league_preview.append({"position": cpd_position, "name": cpd_team.name, "points": cpd_team.points})
 
-    # Pass the entire league table but only display needed parts in HTML
     context = {
-        "league_table": league_table,  # Full league table
-        "top_teams": top_teams,  # Top 3 teams
-        "cpd_team": cpd_team,  # CPD Yr Wyddgrug
-        "cpd_position": cpd_position,  #  CPD’s actual position
+        "team": team,
+        "upcoming_fixture": upcoming_fixture,
+        "league_preview": league_preview,
     }
 
     return render(request, "team/home.html", context)
-
-
-
 
 @login_required
 def manager_dashboard(request):
