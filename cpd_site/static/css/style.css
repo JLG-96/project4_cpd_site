@@ -1,7 +1,20 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
 /* Navbar Styling */
 nav {
     background: black;
-    padding: 15px;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Keeps navbar above all content */
 }
 
 nav ul {
@@ -48,31 +61,76 @@ nav button:hover {
     color: red;
 }
 
-/* General Styles */
+/* Fixes content hiding under the navbar */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+    padding-top: 50px; /* Pushes all content down so navbar doesn’t cover it */
 }
 
 /* Team Banner */
 .team-banner {
-    display: flex;
-    align-items: center;
     background: black;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers content properly */
     padding: 20px;
+    height: 150px; /* Adjusted for proper spacing */
+    margin-top: 0; /* Removes the ugly gap between navbar and banner */
 }
 
-.team-banner .club-logo {
-    width: 80px;
-    height: 80px;
-    margin-right: 15px;
+/* Ensure the navbar is flush with the banner */
+nav {
+    margin: 0;
+    padding: 15px;
+    background: black;
 }
 
+/* Ensure homepage banner is at the top */
+.homepage .team-banner {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Remove any extra margins on the first element inside the banner */
+.team-banner h1,
+.team-banner p {
+    margin-top: 0;
+}
+
+/* Banner Inner Layout */
+.banner-container {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+/* Logo Styling */
+.club-logo {
+    height: 120px; /* Properly fills banner height */
+    width: auto;
+    object-fit: contain;
+    margin-right: 20px; /* Spacing between logo and text */
+}
+
+/* Text Section */
+.team-info {
+    text-align: left; /* Aligns text neatly */
+    flex-grow: 1;
+}
+
+/* Team Name */
 .team-info h1 {
-    color: red;
+    font-size: 2.5rem; /* Balanced size */
+    margin: 0;
+}
+
+/* Sub Info: Manager, Home Ground, Founded */
+.team-info .sub-info {
+    font-size: 1rem;
+    opacity: 0.7;
+    margin-top: 5px;
 }
 
 /* Fixture Section */

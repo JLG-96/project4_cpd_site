@@ -1,6 +1,29 @@
 {% extends "team/base.html" %} 
 
 {% block content %}
+<nav class="standard-nav">
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
+        <li><a href="{% url 'results' %}">Results</a></li>
+        <li><a href="{% url 'league_table' %}">League Table</a></li>
+        {% if request.user.is_authenticated %}
+            {% if request.user.profile.role == "manager" %}
+                <li><a href="{% url 'manager_dashboard' %}">Manager Dashboard</a></li>
+            {% elif request.user.profile.role == "player" %}
+                <li><a href="{% url 'player_dashboard' %}">Player Dashboard</a></li>
+            {% endif %}
+            <li>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>
 <header>
   <h1>Fixtures</h1>
 </header>
