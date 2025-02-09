@@ -51,10 +51,10 @@
     </table>
 </section>
 
-<!-- Manager's Comments -->
+<!-- Manager's Comments Section -->
 <section class="manager-comments">
     <h2>Manager’s Comments</h2>
-    <p>{{ managers_comment }}</p>
+    <p>{{ managers_comment|default:"No recent comments from the manager." }}</p>
 </section>
 
 {% endblock %}
