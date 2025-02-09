@@ -1,33 +1,58 @@
+/* General Reset */
+body, h1, h2, h3, p, ul, li, a, button {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar Styling */
 nav {
-    background-color: #333;
-    padding: 10px;
+    background-color: #000; /* Black Background */
+    padding: 15px;
+    text-align: center;
 }
 
 nav ul {
     list-style: none;
-    margin: 0;
-    padding: 0;
     display: flex;
-    gap: 15px;
+    justify-content: center;
+    gap: 20px;
 }
 
 nav ul li {
     display: inline;
 }
 
-nav ul li a {
+nav ul li a, nav ul li form button {
     color: white;
     text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 5px 10px;
+    font-size: 18px;
+    padding: 10px 15px;
+    transition: 0.3s;
+    border: none;
+    background: none;
+    cursor: pointer;
 }
 
-nav ul li a:hover {
-    text-decoration: underline;
-}
-
-/* Hover Effect */
 nav ul li a:hover, nav ul li form button:hover {
-    text-decoration: underline;
+    background-color: #D32F2F; /* Red Hover Effect */
+    border-radius: 5px;
+}
+
+/* Logout Button */
+nav ul li form button {
+    font-size: 18px;
+    color: white;
+}
+
+nav ul li form button:focus {
+    outline: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
