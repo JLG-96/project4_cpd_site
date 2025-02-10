@@ -2,17 +2,6 @@
 
 {% block content %}
 
-<!-- Team Banner -->
-<section class="team-banner">
-    <img src="{{ team.logo.url }}" alt="CPD Yr Wyddgrug Logo" class="club-logo">
-    <div class="team-info">
-        <h1>CPD Yr Wyddgrug</h1>
-        <p><strong>Manager:</strong> Joel Thomas</p>
-        <p><strong>Home Ground:</strong> Gwernymynydd Village Center</p>
-        <p><strong>Founded:</strong> 2023</p>
-    </div>
-</section>
-
 <!-- Navbar -->
 <nav class="standard-nav">
     <ul>
@@ -38,48 +27,78 @@
     </ul>
 </nav>
 
-<!-- Upcoming Fixture -->
-<section class="fixture-section">
-    <h2>Upcoming Fixture</h2>
-    {% if upcoming_fixture %}
-        <div class="fixture-card">
-            <img src="{{ upcoming_fixture.opponent.logo.url }}" alt="{{ upcoming_fixture.opponent }} Logo">
-            <p><strong>{{ upcoming_fixture.opponent }}</strong></p>
-            <p>{{ upcoming_fixture.date|date:"d/m/Y" }} at {{ upcoming_fixture.time }}</p>
-            <p>Location: {{ upcoming_fixture.location }}</p>
-        </div>
-    {% else %}
-        <p class="no-fixture">No upcoming fixtures.</p>
-    {% endif %}
+<!-- Team Banner -->
+<section class="team-banner">
+    <img src="{{ team.logo.url }}" alt="CPD Yr Wyddgrug Logo" class="club-logo">
+    <div class="team-info">
+        <h1>CPD Yr Wyddgrug</h1>
+        <p><strong>Manager:</strong> Joel Thomas</p>
+        <p><strong>Home Ground:</strong> Gwernymynydd Village Center</p>
+        <p><strong>Founded:</strong> 2023</p>
+    </div>
 </section>
 
-<!-- League Table Preview -->
-<section class="league-preview">
-    <h2>League Table Preview</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Pos</th>
-                <th>Team</th>
-                <th>Pts</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for team in league_preview %}
-                <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
-                    <td>{{ team.position }}</td>
-                    <td>{{ team.name }}</td>
-                    <td>{{ team.points }}</td>
+<!-- Main Homepage Grid -->
+<section class="homepage-grid">
+    
+    <!-- Upcoming Fixture -->
+    <div class="grid-item fixture-section">
+        <h2>Upcoming Fixture</h2>
+        {% if upcoming_fixture %}
+            <div class="fixture-card">
+                <img src="{{ upcoming_fixture.opponent.logo.url }}" alt="{{ upcoming_fixture.opponent }} Logo">
+                <p><strong>{{ upcoming_fixture.opponent }}</strong></p>
+                <p>{{ upcoming_fixture.date|date:"d/m/Y" }} at {{ upcoming_fixture.time }}</p>
+                <p>Location: {{ upcoming_fixture.location }}</p>
+            </div>
+        {% else %}
+            <p class="no-fixture">No upcoming fixtures.</p>
+        {% endif %}
+    </div>
+
+    <!-- Most Recent Result -->
+    <div class="grid-item result-section">
+        <h2>Most Recent Result</h2>
+        {% if latest_result %}
+            <div class="result-card">
+                <p><strong>{{ latest_result.opponent }}</strong></p>
+                <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
+                <p>Final Score: {{ latest_result.goals_for }} - {{ latest_result.goals_against }}</p>
+            </div>
+        {% else %}
+            <p class="no-result">No results available.</p>
+        {% endif %}
+    </div>
+
+    <!-- League Table Preview -->
+    <div class="grid-item league-preview">
+        <h2>League Table Preview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>Pts</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
+            </thead>
+            <tbody>
+                {% for team in league_preview %}
+                    <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
+                        <td>{{ team.position }}</td>
+                        <td>{{ team.name }}</td>
+                        <td>{{ team.points }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-<!-- Manager's Comments -->
-<section class="manager-comments">
-    <h2>Manager’s Comments</h2>
-    <p>{{ managers_comment|default:"No recent comments from the manager." }}</p>
+    <!-- Manager's Comments -->
+    <div class="grid-item manager-comments">
+        <h2>Manager’s Comments</h2>
+        <p>{{ managers_comment|default:"No recent comments from the manager." }}</p>
+    </div>
+
 </section>
 
 {% endblock %}

@@ -186,3 +186,42 @@ tr.highlight {
     padding: 20px;
     background: #eee;
 }
+
+/* Homepage Grid Layout */
+.homepage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    grid-template-rows: auto auto; /* Two rows */
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Ensure all sections fit nicely */
+.grid-item {
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Make sure tables fit well */
+.league-preview table {
+    width: 100%;
+}
+
+/* Ensure CPD Yr Wyddgrug is highlighted */
+.league-preview .highlight {
+    font-weight: bold;
+    background: black;
+    color: white;
+}
+
+/* Responsive Design: Stack on small screens */
+@media (max-width: 768px) {
+    .homepage-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto; /* Stack all sections */
+    }
+}
