@@ -187,41 +187,193 @@ tr.highlight {
     background: #eee;
 }
 
-/* Homepage Grid Layout */
 .homepage-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    grid-template-rows: auto auto; /* Two rows */
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(2, 1fr); /* Ensure two equal-width columns */
+    grid-template-rows: repeat(2, 1fr);    /* Ensure two equal-height rows */
+    gap: 30px;
+    padding: 40px 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* Ensure all sections fit nicely */
+/* Grid Item Styling */
 .grid-item {
     background: white;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    padding: 25px;  /* Increased padding */
+    border-radius: 10px;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.12);
+    text-align: center;
 }
 
-/* Make sure tables fit well */
+/* Headings for Each Section */
+.grid-item h2 {
+    margin-bottom: 15px;
+    font-size: 2rem;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+/* Fixture & Result Cards */
+.fixture-card, .result-card {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
+}
+
+.no-fixture, .no-result {
+    color: gray;
+    font-style: italic;
+}
+
+/* League Table */
 .league-preview table {
     width: 100%;
+    border-collapse: collapse;
 }
 
-/* Ensure CPD Yr Wyddgrug is highlighted */
+.league-preview th, .league-preview td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.league-preview th {
+    background: red;
+    color: white;
+}
+
 .league-preview .highlight {
     font-weight: bold;
     background: black;
     color: white;
 }
 
-/* Responsive Design: Stack on small screens */
+/* Manager Comments Section */
+.manager-comments {
+    text-align: center;
+    padding: 25px;
+    background: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
+}
+
+.manager-comments h2 {
+    font-size: 1.8rem;
+    color: black;
+    font-weight: bold;
+}
+
+.manager-comments p {
+    font-size: 1.2rem;
+    color: #444;
+}
+
+/* General Page Styling */
+.page-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* League Table Styling */
+.league-table-container {
+    max-width: 90%;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.league-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.league-table th, .league-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.league-table th {
+    background: red;
+    color: white;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+}
+
+.league-table tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.league-table .highlight {
+    font-weight: bold;
+    background: black;
+    color: white;
+}
+
+/* No Teams Message */
+.no-teams {
+    color: gray;
+    font-style: italic;
+    font-size: 1.2rem;
+}
+
+
+/* Fixtures & Results List */
+.fixture-list, .results-list {
+    list-style: none;
+    padding: 0;
+}
+
+.fixture-list li, .results-list li {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Fixture/Result Item Headings */
+.fixture-list li strong, .results-list li strong {
+    display: block;
+    font-size: 1.2rem;
+    color: black;
+}
+
+/* No Fixtures/Results */
+.no-fixture, .no-result {
+    color: gray;
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+
+
+
+/* Responsive Design Adjustments */
 @media (max-width: 768px) {
     .homepage-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto; /* Stack all sections */
+        grid-template-columns: 1fr; /* Stack sections on smaller screens */
+        grid-template-rows: auto auto auto auto;
+        gap: 20px;  /* Reduce gap for small screens */
+    }
+
+    .league-table th, .league-table td {
+        padding: 10px;
+        font-size: 1rem;
     }
 }

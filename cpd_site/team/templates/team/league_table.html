@@ -26,10 +26,12 @@
 </nav>
 
 {% if teams %}
-    <table border="1">
+<div class="league-table-container">
+    <h1>North East Wales League Championship 24/25</h1>
+    <table class="league-table">
         <thead>
             <tr>
-                <th>Position</th>
+                <th>Pos</th>
                 <th>Team</th>
                 <th>Played</th>
                 <th>W</th>
@@ -43,7 +45,7 @@
         </thead>
         <tbody>
             {% for team in teams %}
-            <tr {% if team.name == "CPD Yr Wyddgrug" %} style="font-weight: bold; text-transform: uppercase;" {% endif %}>
+            <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ team.name }}</td>
                 <td>{{ team.games_played }}</td>
@@ -58,8 +60,9 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% else %}
-    <p>No teams have been added yet.</p>
+    <p class="no-teams">No teams have been added yet.</p>
 {% endif %}
 
 {% endblock %}
