@@ -33,38 +33,44 @@
         {% if upcoming_fixtures %}
             {% for fixture in upcoming_fixtures %}
                 <div class="fixture-card">
-                    <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
-                    
-                    <div class="availability-section">
-                        <p><strong>Available Players:</strong></p>
-                        <ul>
-                            {% for player in fixture_availability|get_item:fixture.id %}
-                                {% if player.status == "yes" %}
-                                    <li>{{ player.player.username }}</li>
-                                {% endif %}
-                            {% empty %}
-                                <li>No players have confirmed availability yet.</li>
-                            {% endfor %}
-                        </ul>
-
-                        <p><strong>Unavailable Players:</strong></p>
-                        <ul>
-                            {% for player in fixture_availability|get_item:fixture.id %}
-                                {% if player.status == "no" %}
-                                    <li>{{ player.player.username }}</li>
-                                {% endif %}
-                            {% empty %}
-                                <li>No players have set availability yet.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                    <h3>{{ fixture.opponent }}</h3>
+                    <p class="fixture-date">{{ fixture.date|date:"d/m/Y" }} at {{ fixture.time }}</p>
+                    <p class="fixture-location"><strong>Location:</strong> {{ fixture.location }}</p>
+    
+                    <!-- Availability Toggle Buttons -->
+                    <button class="toggle-btn" onclick="toggleAvailability('available-{{ fixture.id }}')">
+                        Available Players ({{ fixture_availability|get_item:fixture.id|yes_count }})
+                    </button>
+                    <ul class="availability-list" id="available-{{ fixture.id }}">
+                        {% for player in fixture_availability|get_item:fixture.id %}
+                            {% if player.status == "yes" %}
+                                <li>{{ player.player.username }}</li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No players have confirmed availability yet.</li>
+                        {% endfor %}
+                    </ul>
+    
+                    <button class="toggle-btn" onclick="toggleAvailability('unavailable-{{ fixture.id }}')">
+                        Unavailable Players ({{ fixture_availability|get_item:fixture.id|no_count }})
+                    </button>
+                    <ul class="availability-list" id="unavailable-{{ fixture.id }}">
+                        {% for player in fixture_availability|get_item:fixture.id %}
+                            {% if player.status == "no" %}
+                                <li>{{ player.player.username }}</li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No players have set availability yet.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             {% endfor %}
         {% else %}
             <p>No upcoming fixtures.</p>
         {% endif %}
     </div>
-
+    
+    
     <!-- Manager Posts -->
     <div class="dashboard-section">
         <h2>Manager Announcements</h2>
