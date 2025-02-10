@@ -24,22 +24,25 @@
         {% endif %}
     </ul>
 </nav>
-    <header>
-        <h1>Results</h1>
-    </header>
 
-    <section>
-        <ul>
+<section class="page-container">
+    <h1>Results</h1>
+    {% if past_fixtures %}
+        <ul class="results-list">
             {% for fixture in past_fixtures %}
-                <li>
-                    {{ fixture.opponent }} 
-                    {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
-                    - Date: {{ fixture.date }} at {{ fixture.time }} 
-                    - Final Score: {{ fixture.goals_for }} - {{ fixture.goals_against }}
-                </li>
-            {% empty %}
-                <p>No past results available.</p>
+            <li class="result-item">
+                <strong>{{ fixture.opponent.name }}</strong> 
+                {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
+                <br>
+                <span class="result-score">Final Score: <strong>{{ fixture.goals_for }} - {{ fixture.goals_against }}</strong></span>
+                <br>
+                <span class="fixture-date">{{ fixture.date|date:"d/m/Y" }} | {{ fixture.time }}</span>
+            </li>
             {% endfor %}
         </ul>
-    </section>
+    {% else %}
+        <p class="no-result">No past results available.</p>
+    {% endif %}
+</section>
+
 {% endblock %}

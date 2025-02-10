@@ -1,4 +1,4 @@
-{% extends "team/base.html" %} 
+{% extends "team/base.html" %}
 
 {% block content %}
 <nav class="standard-nav">
@@ -24,23 +24,25 @@
         {% endif %}
     </ul>
 </nav>
-<header>
-  <h1>Fixtures</h1>
-</header>
 
-<section>
-  {% if upcoming_fixtures %}
-  <ul>
-    {% for fixture in upcoming_fixtures %}
-    <li>
-      {{ fixture.opponent.name }} 
-      {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
-      - Date: {{ fixture.date }} | Time: {{ fixture.time }} | Location: {{ fixture.location }}
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>No upcoming fixtures available.</p>
-  {% endif %}
+<section class="page-container">
+    <h1>Upcoming Fixtures</h1>
+    {% if upcoming_fixtures %}
+        <ul class="fixture-list">
+            {% for fixture in upcoming_fixtures %}
+            <li class="fixture-item">
+                <strong>{{ fixture.opponent.name }}</strong> 
+                {% if fixture.home_or_away == "H" %} (Home) {% else %} (Away) {% endif %}
+                <br>
+                <span class="fixture-date">{{ fixture.date|date:"d/m/Y" }} | {{ fixture.time }}</span>
+                <br>
+                <span class="fixture-location">Location: {{ fixture.location }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-fixture">No upcoming fixtures available.</p>
+    {% endif %}
 </section>
+
 {% endblock %}

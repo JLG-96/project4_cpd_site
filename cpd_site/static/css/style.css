@@ -362,6 +362,56 @@ tr.highlight {
 }
 
 
+/* Fixtures & Results Page Styles */
+.page-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* List Styles */
+.fixture-list, .results-list {
+    list-style: none;
+    padding: 0;
+}
+
+.fixture-item, .result-item {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Fixture/Result Item Headings */
+.fixture-item strong, .result-item strong {
+    display: block;
+    font-size: 1.2rem;
+    color: black;
+}
+
+/* Fixture/Result Date */
+.fixture-date, .result-score {
+    display: block;
+    font-size: 1rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* No Fixtures/Results */
+.no-fixture, .no-result {
+    color: gray;
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+
 
 
 /* Responsive Design Adjustments */
