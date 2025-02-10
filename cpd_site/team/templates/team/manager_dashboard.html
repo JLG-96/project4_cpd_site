@@ -1,36 +1,87 @@
 {% extends "team/base.html" %}
 {% load custom_filters %}
-
 {% block content %}
-<h2>Upcoming Fixtures</h2>
+<nav class="standard-nav">
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
+        <li><a href="{% url 'results' %}">Results</a></li>
+        <li><a href="{% url 'league_table' %}">League Table</a></li>
+        {% if request.user.is_authenticated %}
+            {% if request.user.profile.role == "manager" %}
+                <li><a href="{% url 'manager_dashboard' %}">Manager Dashboard</a></li>
+            {% elif request.user.profile.role == "player" %}
+                <li><a href="{% url 'player_dashboard' %}">Player Dashboard</a></li>
+            {% endif %}
+            <li>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>
+<div class="dashboard-container">
+    <h1>Manager Dashboard</h1>
 
-{% if upcoming_fixtures %}
-    {% for fixture in upcoming_fixtures %}
-        <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
+    <!-- Upcoming Fixtures Section -->
+    <div class="dashboard-section">
+        <h2>Upcoming Fixtures</h2>
+        {% if upcoming_fixtures %}
+            {% for fixture in upcoming_fixtures %}
+                <div class="fixture-card">
+                    <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
+                    
+                    <div class="availability-section">
+                        <p><strong>Available Players:</strong></p>
+                        <ul>
+                            {% for player in fixture_availability|get_item:fixture.id %}
+                                {% if player.status == "yes" %}
+                                    <li>{{ player.player.username }}</li>
+                                {% endif %}
+                            {% empty %}
+                                <li>No players have confirmed availability yet.</li>
+                            {% endfor %}
+                        </ul>
 
-        <p><strong>Available Players:</strong></p>
-        <ul>
-            {% for player in fixture_availability|get_item:fixture.id %}
-                {% if player.status == "yes" %}
-                    <li>{{ player.player.username }}</li>
-                {% endif %}
-            {% empty %}
-                <li>No players have confirmed availability yet.</li>
+                        <p><strong>Unavailable Players:</strong></p>
+                        <ul>
+                            {% for player in fixture_availability|get_item:fixture.id %}
+                                {% if player.status == "no" %}
+                                    <li>{{ player.player.username }}</li>
+                                {% endif %}
+                            {% empty %}
+                                <li>No players have set availability yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
+        {% else %}
+            <p>No upcoming fixtures.</p>
+        {% endif %}
+    </div>
 
-        <p><strong>Unavailable Players:</strong></p>
-        <ul>
-            {% for player in fixture_availability|get_item:fixture.id %}
-                {% if player.status == "no" %}
-                    <li>{{ player.player.username }}</li>
-                {% endif %}
-            {% empty %}
-                <li>No players have set availability yet.</li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
-{% else %}
-    <p>No upcoming fixtures.</p>
-{% endif %}
+    <!-- Manager Posts -->
+    <div class="dashboard-section">
+        <h2>Manager Announcements</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-submit">Post</button>
+        </form>
+
+        {% for post in posts %}
+            <div class="post-card">
+                <p><strong>{{ post.manager.username }}</strong> - {{ post.created_at|date:"d/m/Y" }}</p>
+                <p>{{ post.content }}</p>
+            </div>
+        {% empty %}
+            <p>No announcements yet.</p>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

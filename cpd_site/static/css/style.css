@@ -467,6 +467,102 @@ tr.highlight {
     background: black;
 }
 
+/* Dashboards styling */
+
+/* DASHBOARD CONTAINER */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* HEADINGS */
+.dashboard-container h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.dashboard-section {
+    margin-bottom: 30px;
+}
+
+/* FIXTURE CARDS */
+.fixture-card {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* AVAILABILITY SECTION */
+.availability-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.availability-section li {
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.05);
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+/* AVAILABILITY RADIO BUTTONS */
+.availability-card {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.availability-card label {
+    display: inline-block;
+    margin: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.availability-card input[type="radio"] {
+    margin-right: 5px;
+}
+
+/* MANAGER POSTS */
+.post-card {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+/* BUTTONS */
+.btn-submit {
+    display: block;
+    width: 100%;
+    background: red;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover {
+    background: black;
+}
+
 
 
 /* Responsive Design Adjustments */

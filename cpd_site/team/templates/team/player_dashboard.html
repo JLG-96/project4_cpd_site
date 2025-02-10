@@ -1,42 +1,54 @@
 {% extends 'team/base.html' %}
 {% load custom_filters %}
 {% block content %}
-<h2>Upcoming Fixtures</h2>
-
-{% if upcoming_fixtures %}
-    <form method="post">
-        {% csrf_token %}
-        <table>
-            <tr>
-                <th>Fixture</th>
-                <th>Date</th>
-                <th>Availability</th>
-            </tr>
-            {% for fixture in upcoming_fixtures %}
-            <tr>
-                <td>{{ fixture.opponent }}</td>
-                <td>{{ fixture.date|date:"d/m/Y" }}</td>
-                <td>
-                    <select name="availability_{{ fixture.id }}">
-                        <option value="yes" {% if fixture_availability|get_item:fixture.id == "yes" %}selected{% endif %}>Available</option>
-                        <option value="no" {% if fixture_availability|get_item:fixture.id == "no" %}selected{% endif %}>Not Available</option>
-                    </select>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-        <button type="submit">Save Availability</button>
-    </form>
-{% else %}
-    <p>No upcoming fixtures.</p>
-{% endif %}
-
-{% if messages %}
+<nav class="standard-nav">
     <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
+        <li><a href="{% url 'results' %}">Results</a></li>
+        <li><a href="{% url 'league_table' %}">League Table</a></li>
+        {% if request.user.is_authenticated %}
+            {% if request.user.profile.role == "manager" %}
+                <li><a href="{% url 'manager_dashboard' %}">Manager Dashboard</a></li>
+            {% elif request.user.profile.role == "player" %}
+                <li><a href="{% url 'player_dashboard' %}">Player Dashboard</a></li>
+            {% endif %}
+            <li>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+        {% endif %}
     </ul>
-{% endif %}
+</nav>
+<div class="dashboard-container">
+    <h1>Player Dashboard</h1>
 
+    <!-- Availability Selection -->
+    <div class="dashboard-section">
+        <h2>Set Availability</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for fixture in upcoming_fixtures %}
+                <div class="availability-card">
+                    <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
+                    <label>
+                        <input type="radio" name="availability_{{ fixture.id }}" value="yes"
+                            {% if fixture_availability|get_item:fixture.id == "yes" %} checked {% endif %}>
+                        Available
+                    </label>
+                    <label>
+                        <input type="radio" name="availability_{{ fixture.id }}" value="no"
+                            {% if fixture_availability|get_item:fixture.id == "no" %} checked {% endif %}>
+                        Unavailable
+                    </label>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-submit">Save Availability</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
