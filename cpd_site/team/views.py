@@ -1,7 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Team, Fixture, Profile, PlayerAvailability
-from .forms import ProfileForm, ManagerPostForm, ManagerPost
+from .models import Team, Fixture, Profile, PlayerAvailability, ManagerMessage
+from .forms import (ProfileForm,
+                    ManagerPostForm,
+                    ManagerPost,
+                    ManagerMessageForm)
 from django.contrib import messages
 
 
@@ -194,3 +197,55 @@ def edit_manager_post(request, post_id):
 
     return render(request, "team/edit_manager_post.html", {
         "form": form, "post": post})
+
+
+@login_required
+def manager_dashboard(request):
+    """View for manager-specific actions"""
+    try:
+        user_profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        return redirect("create_profile")
+
+    if user_profile.role != "manager":
+        return render(request, "team/access_denied.html")
+
+    # Forms for posts & messages
+    post_form = ManagerPostForm()
+    message_form = ManagerMessageForm()
+
+    if request.method == "POST":
+        if "post_submit" in request.POST:  # Check if it's a comment submission
+            post_form = ManagerPostForm(request.POST)
+            if post_form.is_valid():
+                post = post_form.save(commit=False)
+                post.manager = request.user
+                post.save()
+                return redirect("manager_dashboard")
+
+        elif "message_submit" in request.POST:
+            message_form = ManagerMessageForm(request.POST)
+            if message_form.is_valid():
+                message = message_form.save(commit=False)
+                message.manager = request.user
+                message.save()
+                return redirect("manager_dashboard")
+
+    # Fetch posts & messages
+    posts = ManagerPost.objects.all().order_by("-created_at")
+    messages = ManagerMessage.objects.all().order_by("-created_at")
+
+    upcoming_fixtures = Fixture.objects.filter(
+        match_completed=False).order_by("date", "time")
+    fixture_availability = {fixture.id: list(
+        PlayerAvailability.objects.filter(
+            fixture=fixture)) for fixture in upcoming_fixtures}
+
+    return render(request, "team/manager_dashboard.html", {
+        "post_form": post_form,
+        "message_form": message_form,
+        "posts": posts,
+        "messages": messages,
+        "upcoming_fixtures": upcoming_fixtures,
+        "fixture_availability": fixture_availability,
+    })

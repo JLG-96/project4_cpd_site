@@ -1,5 +1,5 @@
 from django import forms
-from .models import ManagerPost, PlayerAvailability, Profile
+from .models import ManagerPost, PlayerAvailability, Profile, ManagerMessage
 
 
 class ManagerPostForm(forms.ModelForm):
@@ -18,3 +18,9 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ["role"]
+
+
+class ManagerMessageForm(forms.ModelForm):
+    class Meta:
+        model = ManagerMessage
+        fields = ["title", "content"]

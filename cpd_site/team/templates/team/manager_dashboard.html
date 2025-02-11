@@ -90,5 +90,25 @@
             <p>No announcements yet.</p>
         {% endfor %}
     </div>
+    <!-- Manager Messages Section -->
+    <div class="grid-item manager-messages">
+        <h2>To the Players</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ message_form.as_p }}
+            <button type="submit" name="message_submit">Send Message</button>
+        </form>
+
+        <h3>Sent Messages</h3>
+        {% for message in messages %}
+            <div class="message-card">
+                <h4>{{ message.title }}</h4>
+                <p>{{ message.content }}</p>
+                <p class="date"><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
+            </div>
+        {% empty %}
+            <p>No messages sent yet.</p>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
