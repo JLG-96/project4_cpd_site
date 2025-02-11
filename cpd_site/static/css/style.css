@@ -1,22 +1,24 @@
-/* General Styles */
+/* General */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 50px 0 0;
     background-color: #f4f4f4;
 }
 
-/* Navbar Styling */
+/* NavBar */
 nav {
     background: black;
-    padding: 10px;
+    padding: 15px;
     position: fixed;
     width: 100%;
     top: 0;
     left: 0;
-    z-index: 1000; /* Keeps navbar above all content */
+    z-index: 1000;
+    margin: 0;
 }
 
+/* Navbar List */
 nav ul {
     list-style: none;
     display: flex;
@@ -30,6 +32,7 @@ nav ul li {
     display: inline;
 }
 
+/* Navbar Links */
 nav ul li a {
     color: white;
     text-decoration: none;
@@ -41,6 +44,7 @@ nav ul li a:hover {
     color: red;
 }
 
+/* Navbar Form & Buttons */
 nav form {
     display: inline;
 }
@@ -60,40 +64,17 @@ nav button:hover {
     color: red;
 }
 
-/* Fixes content hiding under the navbar */
-body {
-    padding-top: 50px; /* Pushes all content down so navbar doesn’t cover it */
-}
-
 /* Team Banner */
+
 .team-banner {
     background: black;
     color: white;
     display: flex;
     align-items: center;
-    justify-content: center; /* Centers content properly */
+    justify-content: center;
     padding: 20px;
-    height: 150px; /* Adjusted for proper spacing */
-    margin-top: 0; /* Removes the ugly gap between navbar and banner */
-}
-
-/* Ensure the navbar is flush with the banner */
-nav {
-    margin: 0;
-    padding: 15px;
-    background: black;
-}
-
-/* Ensure homepage banner is at the top */
-.homepage .team-banner {
-    margin-top: 0;
-    padding-top: 0;
-}
-
-/* Remove any extra margins on the first element inside the banner */
-.team-banner h1,
-.team-banner p {
-    margin-top: 0;
+    height: 150px;
+    margin-top: 0; /* Removes gap between navbar and banner */
 }
 
 /* Banner Inner Layout */
@@ -107,21 +88,21 @@ nav {
 
 /* Logo Styling */
 .club-logo {
-    height: 120px; /* Properly fills banner height */
+    height: 120px;
     width: auto;
     object-fit: contain;
-    margin-right: 20px; /* Spacing between logo and text */
+    margin-right: 20px;
 }
 
 /* Text Section */
 .team-info {
-    text-align: left; /* Aligns text neatly */
+    text-align: left;
     flex-grow: 1;
 }
 
 /* Team Name */
 .team-info h1 {
-    font-size: 2.5rem; /* Balanced size */
+    font-size: 2.5rem;
     margin: 0;
 }
 
@@ -132,157 +113,79 @@ nav {
     margin-top: 5px;
 }
 
-/* Fixture Section */
+/* Fixtures */
 .fixture-section {
     text-align: center;
     padding: 20px;
 }
 
-.fixture-card {
-    background: white;
-    padding: 15px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    display: inline-block;
-    text-align: center;
-    border-radius: 5px;
+/* Fixture Container */
+.fixtures-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
 
+/* Fixture Cards */
+.fixture-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    min-height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Fixture Home/Away Indicator */
+.fixture-home-away {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: red;
+    font-size: 1.2rem;
+}
+
+/* Opponent Name */
+.fixture-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+/* Fixture Date & Time */
+.fixture-date {
+    font-size: 1rem;
+    color: gray;
+    margin-bottom: 5px;
+}
+
+/* Fixture Location */
+.fixture-location {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* No Fixture Message */
 .no-fixture {
     font-style: italic;
     color: gray;
 }
 
-/* League Table */
-.league-preview {
+/* Dashboard Fixture Styling */
+.dashboard .fixture-card,
+.full-width .fixture-card {
+    background: rgba(0, 0, 0, 0.05);
     width: 80%;
+    max-width: 500px;
     margin: 20px auto;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+/* League Table Style */
 
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-th {
-    background: red;
-    color: white;
-}
-
-tr.highlight {
-    font-weight: bold;
-    background: #000;
-    color: white;
-}
-
-/* Manager Comments */
-.manager-comments {
-    text-align: center;
-    padding: 20px;
-    background: #eee;
-}
-
-.homepage-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Ensure two equal-width columns */
-    grid-template-rows: repeat(2, 1fr);    /* Ensure two equal-height rows */
-    gap: 30px;
-    padding: 40px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Grid Item Styling */
-.grid-item {
-    background: white;
-    padding: 25px;  /* Increased padding */
-    border-radius: 10px;
-    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.12);
-    text-align: center;
-}
-
-/* Headings for Each Section */
-.grid-item h2 {
-    margin-bottom: 15px;
-    font-size: 2rem;
-    color: black;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: bold;
-}
-
-/* Fixture & Result Cards */
-.fixture-card, .result-card {
-    background: rgba(0, 0, 0, 0.05);
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
-}
-
-.no-fixture, .no-result {
-    color: gray;
-    font-style: italic;
-}
-
-/* League Table */
-.league-preview table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.league-preview th, .league-preview td {
-    padding: 12px;
-    border: 1px solid #ddd;
-}
-
-.league-preview th {
-    background: red;
-    color: white;
-}
-
-.league-preview .highlight {
-    font-weight: bold;
-    background: black;
-    color: white;
-}
-
-/* Manager Comments Section */
-.manager-comments {
-    text-align: center;
-    padding: 25px;
-    background: #f8f8f8;
-    border-radius: 10px;
-    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
-}
-
-.manager-comments h2 {
-    font-size: 1.8rem;
-    color: black;
-    font-weight: bold;
-}
-
-.manager-comments p {
-    font-size: 1.2rem;
-    color: #444;
-}
-
-/* General Page Styling */
-.page-container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* League Table Styling */
 .league-table-container {
     max-width: 90%;
     margin: 40px auto;
@@ -293,18 +196,22 @@ tr.highlight {
     text-align: center;
 }
 
+/* League Table Layout */
 .league-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-.league-table th, .league-table td {
+/* Table Header & Cells */
+.league-table th, 
+.league-table td {
     padding: 12px;
     border: 1px solid #ddd;
     text-align: center;
 }
 
+/* Table Header Styling */
 .league-table th {
     background: red;
     color: white;
@@ -312,14 +219,60 @@ tr.highlight {
     font-size: 1.2rem;
 }
 
+/* Alternating Row Colors */
 .league-table tr:nth-child(even) {
     background: rgba(0, 0, 0, 0.05);
 }
 
+/* Highlighted Row for User's Team */
 .league-table .highlight {
     font-weight: bold;
     background: black;
     color: white;
+}
+
+/* League Table Preview */
+.league-preview {
+    max-width: 90%;
+    margin: 20px auto;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.league-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+/* Table Header & Cells */
+.league-preview th, .league-preview td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* Table Header Styling */
+.league-preview th {
+    background: red;
+    color: white;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+}
+
+/* Alternating Row Colors */
+.league-preview tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Highlight CPD in Club Colors */
+.league-preview .highlight {
+    font-weight: bold;
+    background: red;
+    color: black;
 }
 
 /* No Teams Message */
@@ -330,12 +283,81 @@ tr.highlight {
 }
 
 
+/* Manager Comments */
+.manager-comments {
+    text-align: center;
+    padding: 25px;
+    background: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+}
+
+/* Manager Comments Heading */
+.manager-comments h2 {
+    font-size: 1.8rem;
+    color: black;
+    font-weight: bold;
+}
+
+/* Manager Comments Text */
+.manager-comments p {
+    font-size: 1.2rem;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Homepage Grid Layout */
+.homepage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 30px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.grid-item {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.12);
+    text-align: center;
+}
+
+.grid-item h2 {
+    margin-bottom: 15px;
+    font-size: 2rem;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+/* General Page Style */
+.page-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Results Page Container (Smaller than General Page) */
+.results-page .page-container {
+    max-width: 800px;
+}
+
 /* Fixtures & Results List */
 .fixture-list, .results-list {
     list-style: none;
     padding: 0;
 }
 
+/* Individual Fixture & Result Items */
 .fixture-list li, .results-list li {
     background: rgba(0, 0, 0, 0.05);
     padding: 15px;
@@ -345,14 +367,15 @@ tr.highlight {
     text-align: center;
 }
 
-/* Fixture/Result Item Headings */
-.fixture-list li strong, .results-list li strong {
+/* Fixture & Result Headings */
+.fixture-list li strong, 
+.results-list li strong {
     display: block;
     font-size: 1.2rem;
     color: black;
 }
 
-/* No Fixtures/Results */
+/* No Fixtures or Results Message */
 .no-fixture, .no-result {
     color: gray;
     font-style: italic;
@@ -360,24 +383,7 @@ tr.highlight {
     margin-top: 10px;
 }
 
-
-/* Fixtures & Results Page Styles */
-.page-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* List Styles */
-.fixture-list, .results-list {
-    list-style: none;
-    padding: 0;
-}
-
+/* Fixture & Result Items */
 .fixture-item, .result-item {
     background: rgba(0, 0, 0, 0.05);
     padding: 15px;
@@ -387,14 +393,15 @@ tr.highlight {
     text-align: center;
 }
 
-/* Fixture/Result Item Headings */
-.fixture-item strong, .result-item strong {
+/* Fixture & Result Item Headings */
+.fixture-item strong, 
+.result-item strong {
     display: block;
     font-size: 1.2rem;
     color: black;
 }
 
-/* Fixture/Result Date */
+/* Fixture & Result Dates */
 .fixture-date, .result-score {
     display: block;
     font-size: 1rem;
@@ -402,15 +409,7 @@ tr.highlight {
     margin-top: 5px;
 }
 
-/* No Fixtures/Results */
-.no-fixture, .no-result {
-    color: gray;
-    font-style: italic;
-    font-size: 1.1rem;
-    margin-top: 10px;
-}
-
-/* LOGIN PAGE STYLING */
+/* Login Page Container */
 .login-container {
     max-width: 400px;
     margin: 80px auto;
@@ -421,30 +420,35 @@ tr.highlight {
     text-align: center;
 }
 
+/* Login Heading */
 .login-container h2 {
     margin-bottom: 20px;
     font-size: 2rem;
     color: black;
 }
 
+/* Login Form Layout */
 .login-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
+/* Form Group (Label & Input) */
 .form-group {
     display: flex;
     flex-direction: column;
     text-align: left;
 }
 
+/* Labels for Inputs */
 .form-group label {
     font-size: 1rem;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
+/* Input Fields */
 .form-group input {
     padding: 10px;
     font-size: 1rem;
@@ -452,6 +456,7 @@ tr.highlight {
     border-radius: 5px;
 }
 
+/* Login Button */
 .login-btn {
     background: red;
     color: white;
@@ -463,13 +468,12 @@ tr.highlight {
     transition: background 0.3s ease-in-out;
 }
 
+/* Hover Effect on Button */
 .login-btn:hover {
     background: black;
 }
 
-/* Dashboards styling */
-
-/* DASHBOARD CONTAINER */
+/* Dashboard Container */
 .dashboard-container {
     max-width: 1200px;
     margin: 30px auto;
@@ -479,7 +483,7 @@ tr.highlight {
     box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* HEADINGS */
+/* Dashboard Headings */
 .dashboard-container h1 {
     text-align: center;
     font-size: 2.5rem;
@@ -487,21 +491,60 @@ tr.highlight {
     margin-bottom: 20px;
 }
 
+/* Dashboard Section Spacing */
 .dashboard-section {
     margin-bottom: 30px;
 }
 
-/* FIXTURE CARDS */
-.fixture-card {
-    background: rgba(0, 0, 0, 0.05);
-    padding: 20px;
+/* Manager Posts */
+.post-card {
+    background: #f8f8f8;
+    padding: 15px;
     border-radius: 10px;
-    text-align: center;
-    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
     margin-bottom: 20px;
 }
 
-/* AVAILABILITY SECTION */
+/* General Button Styling */
+.btn {
+    color: white;
+    font-size: 1.2rem;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Primary Red Button */
+.btn-red {
+    background: red;
+}
+
+.btn-red:hover {
+    background: black;
+}
+
+/* Secondary Black Button */
+.btn-black {
+    background: black;
+}
+
+.btn-black:hover {
+    background: red;
+}
+
+/* Availability Section */
+.availability {
+    margin-top: 10px;
+}
+
+/* Availability List */
+.availability-section {
+    text-align: left;
+    margin-top: 10px;
+}
+
 .availability-section ul {
     list-style: none;
     padding: 0;
@@ -515,7 +558,7 @@ tr.highlight {
     border-radius: 5px;
 }
 
-/* AVAILABILITY RADIO BUTTONS */
+/* Availability Selection Cards */
 .availability-card {
     padding: 15px;
     background: rgba(0, 0, 0, 0.05);
@@ -524,6 +567,7 @@ tr.highlight {
     margin-bottom: 20px;
 }
 
+/* Radio Buttons Styling */
 .availability-card label {
     display: inline-block;
     margin: 10px;
@@ -535,142 +579,49 @@ tr.highlight {
     margin-right: 5px;
 }
 
-/* MANAGER POSTS */
-.post-card {
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
-    margin-bottom: 20px;
-}
-
-/* BUTTONS */
-.btn-submit {
-    display: block;
-    width: 100%;
-    background: red;
-    color: white;
+/* Dropdown Details */
+details, .availability-list {
+    background: rgba(0, 0, 0, 0.05);
     padding: 10px;
-    border: none;
     border-radius: 5px;
-    font-size: 1rem;
+    margin-top: 5px;
+}
+
+/* Summary & List Items */
+details summary, .availability-list li {
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    padding: 5px;
 }
 
-.btn-submit:hover {
-    background: black;
-}
-
-/* Dashboard Fixture Styling */
-.fixture-card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    min-height: 200px; /* Ensure equal height */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-/* Home/Away Tag */
-.fixture-home-away {
-    font-weight: bold;
-    text-transform: uppercase;
-    color: red;
-    font-size: 1.2rem;
-}
-
-/* Opponent Name */
-.fixture-card h3 {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-/* Date & Time */
-.fixture-date {
-    font-size: 1.1rem;
-    color: gray;
-    margin-bottom: 5px;
-}
-
-/* Location */
-.fixture-location {
-    font-size: 1rem;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-/* Ensuring all sections inside fixture cards are spaced evenly */
-.availability-section {
-    text-align: left;
-    margin-top: 10px;
-}
-
-/* Fixture Cards */
-.fixture-card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    min-height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-/* Toggle Buttons */
-.toggle-btn {
-    background: black;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 5px;
-    margin-top: 8px;
-    transition: background 0.3s ease-in-out;
-}
-
-.toggle-btn:hover {
-    background: red;
-}
-
-/* Availability Lists */
-.availability-list {
-    display: none; /* Hidden by default */
+/* Dropdown List */
+details ul {
     list-style: none;
-    padding: 10px;
+    padding: 0;
     margin: 0;
     text-align: left;
-    background: #f8f8f8;
-    border-radius: 5px;
 }
 
-.availability-list li {
-    padding: 5px 0;
+/* Dropdown List Items */
+details ul li {
+    padding: 3px 0;
+    font-size: 1rem;
 }
 
-
-
-
-/* Responsive Design Adjustments */
 @media (max-width: 768px) {
     .homepage-grid {
-        grid-template-columns: 1fr; /* Stack sections on smaller screens */
+        grid-template-columns: 1fr;
         grid-template-rows: auto auto auto auto;
-        gap: 20px;  /* Reduce gap for small screens */
+        gap: 20px;
     }
 
     .league-table th, .league-table td {
         padding: 10px;
         font-size: 1rem;
+    }
+
+    .fixtures-container {
+        flex-direction: column;
+        align-items: center;
     }
 }
