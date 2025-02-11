@@ -8,7 +8,7 @@ from django.contrib import messages
 def home(request):
     """Fetches team details, upcoming fixture, and league standings."""
 
-    # Always fetch CPD Yr Wyddgrug
+    # Fetch the team
     team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
 
     # Fetch upcoming fixture
@@ -16,7 +16,7 @@ def home(request):
         match_completed=False
     ).order_by('date', 'time').first()
 
-    # Fetch league standings (ALREADY WORKING, DON'T CHANGE)
+    # Fetch league standings
     league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
 
     # Find CPD's actual position in the league
@@ -31,15 +31,16 @@ def home(request):
     if cpd_team and cpd_team not in top_teams:
         league_preview.append({"position": cpd_position, "name": cpd_team.name, "points": cpd_team.points})
 
-    # Get latest manager comment
-    latest_comment = ManagerPost.objects.order_by("-created_at").first()
+    # Fetch only the last 5 manager posts
+    manager_posts = ManagerPost.objects.order_by("-created_at")[:5]
 
-    # Context for rendering
+    print("Manager Posts Retrieved:", manager_posts)  # Debugging line
+
     context = {
         "team": team,
         "upcoming_fixture": upcoming_fixture,
         "league_preview": league_preview,
-        "latest_comment": latest_comment,  # Include this in context
+        "manager_posts": manager_posts,  # Pass multiple posts
     }
 
     return render(request, "team/home.html", context)

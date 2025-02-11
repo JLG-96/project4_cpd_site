@@ -96,16 +96,50 @@
     <!-- Manager's Comments -->
     <div class="grid-item manager-comments">
         <h2>Manager’s Comments</h2>
-        {% if latest_comment %}
-            <p><strong>{{ latest_comment.title }}</strong></p>
-            <p>{{ latest_comment.content }}</p>
-            {% if request.user.is_authenticated and request.user.profile.role == "manager" %}
-                <a href="{% url 'edit_manager_post' latest_comment.id %}" class="edit-button">Edit</a>
-            {% endif %}
+
+        {% if manager_posts %}
+            <div id="manager-comment-container">
+                <p id="post-title"><strong>{{ manager_posts.0.title }}</strong></p>
+                <p id="post-content">{{ manager_posts.0.content }}</p>
+                <p id="post-date"><small>Posted on {{ manager_posts.0.created_at|date:"d/m/Y" }}</small></p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <button id="prev-post" onclick="changePost(-1)">Previous</button>
+            <button id="next-post" onclick="changePost(1)">Next</button>
+
+            <!-- Hidden JSON Data for JavaScript -->
+            <script>
+                const managerPosts = [
+                    {% for post in manager_posts %}
+                        {
+                            "title": "{{ post.title }}",
+                            "content": "{{ post.content }}",
+                            "date": "{{ post.created_at|date:'d/m/Y' }}"
+                        }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ];
+                let currentIndex = 0;
+
+                function changePost(direction) {
+                    currentIndex += direction;
+                    if (currentIndex < 0) {
+                        currentIndex = managerPosts.length - 1;
+                    } else if (currentIndex >= managerPosts.length) {
+                        currentIndex = 0;
+                    }
+
+                    document.getElementById("post-title").innerHTML = `<strong>${managerPosts[currentIndex].title}</strong>`;
+                    document.getElementById("post-content").innerHTML = managerPosts[currentIndex].content;
+                    document.getElementById("post-date").innerHTML = `<small>Posted on ${managerPosts[currentIndex].date}</small>`;
+                }
+            </script>
+
         {% else %}
             <p>No recent comments from the manager.</p>
         {% endif %}
     </div>
+
 
 </section>
 
