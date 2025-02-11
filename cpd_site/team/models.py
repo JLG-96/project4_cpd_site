@@ -24,8 +24,10 @@ class Team(models.Model):
         self.goals_against = 0
         self.points = 0
 
-        completed_fixtures = Fixture.objects.filter(match_completed=True).filter(
-            models.Q(opponent=self) | models.Q(home_or_away="H", opponent__isnull=False)
+        completed_fixtures = Fixture.objects.filter(
+            match_completed=True).filter(
+            models.Q(opponent=self) | models.Q(
+                home_or_away="H", opponent__isnull=False)
         )
 
         for fixture in completed_fixtures:
@@ -66,7 +68,8 @@ class Fixture(models.Model):
         ("H", "Home"),
         ("A", "Away"),
     ]
-    opponent = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True)
+    opponent = models.ForeignKey(
+        Team, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField()
     time = models.TimeField()
     location = models.CharField(max_length=100)
@@ -77,7 +80,8 @@ class Fixture(models.Model):
 
     def __str__(self):
         opponent_name = self.opponent.name if self.opponent else "Unknown Team"
-        return f"{opponent_name} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
+        return f"{opponent_name} - {self.date} ({'Home' if self.home_or_away ==
+                                                 'H' else 'Away'})"
 
 
 class Profile(models.Model):
@@ -103,7 +107,6 @@ class ManagerPost(models.Model):
         return self.title
 
 
-
 class PlayerAvailability(models.Model):
     AVAILABILITY_CHOICES = [
         ("yes", "Available"),
@@ -111,7 +114,18 @@ class PlayerAvailability(models.Model):
     ]
     player = models.ForeignKey(User, on_delete=models.CASCADE)
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE, default=1)
-    status = models.CharField(max_length=3, choices=AVAILABILITY_CHOICES, default="no")
+    status = models.CharField(
+        max_length=3, choices=AVAILABILITY_CHOICES, default="no")
 
     def __str__(self):
         return f"{self.player.username} - {self.fixture} ({self.status})"
+
+
+class ManagerMessage(models.Model):
+    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
