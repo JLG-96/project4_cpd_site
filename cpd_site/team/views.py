@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Team, Fixture, Profile, PlayerAvailability
 from .forms import ProfileForm, ManagerPostForm, ManagerPost
 from django.contrib import messages
@@ -31,10 +31,15 @@ def home(request):
     if cpd_team and cpd_team not in top_teams:
         league_preview.append({"position": cpd_position, "name": cpd_team.name, "points": cpd_team.points})
 
+    # Get latest manager comment
+    latest_comment = ManagerPost.objects.order_by("-created_at").first()
+
+    # Context for rendering
     context = {
         "team": team,
         "upcoming_fixture": upcoming_fixture,
         "league_preview": league_preview,
+        "latest_comment": latest_comment,  # Include this in context
     }
 
     return render(request, "team/home.html", context)
@@ -150,3 +155,23 @@ def league_table(request):
     """View for displaying league table standings."""
     teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
     return render(request, 'team/league_table.html', {'teams': teams})
+
+
+@login_required
+def edit_manager_post(request, post_id):
+    post = get_object_or_404(ManagerPost, id=post_id)
+
+    # Ensure only the manager who created the post can edit it
+    if request.user != post.manager:
+        return redirect("manager_dashboard")
+
+    if request.method == "POST":
+        form = ManagerPostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect("manager_dashboard")  # Redirect after saving
+
+    else:
+        form = ManagerPostForm(instance=post)
+
+    return render(request, "team/edit_manager_post.html", {"form": form, "post": post})

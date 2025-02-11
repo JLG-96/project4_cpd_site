@@ -96,7 +96,15 @@
     <!-- Manager's Comments -->
     <div class="grid-item manager-comments">
         <h2>Manager’s Comments</h2>
-        <p>{{ managers_comment|default:"No recent comments from the manager." }}</p>
+        {% if latest_comment %}
+            <p><strong>{{ latest_comment.title }}</strong></p>
+            <p>{{ latest_comment.content }}</p>
+            {% if request.user.is_authenticated and request.user.profile.role == "manager" %}
+                <a href="{% url 'edit_manager_post' latest_comment.id %}" class="edit-button">Edit</a>
+            {% endif %}
+        {% else %}
+            <p>No recent comments from the manager.</p>
+        {% endif %}
     </div>
 
 </section>
