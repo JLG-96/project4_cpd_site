@@ -142,7 +142,7 @@ nav button:hover {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    display: flex;
+     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -303,14 +303,28 @@ nav button:hover {
     box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.08);
     margin-top: 20px;
     grid-column: span 2; /* Ensures it takes full width */
+}
+
+/* Manager comment container */
+#manager-comment-container {
+    max-width: 70%;
+    margin: auto;
     text-align: center;
 }
 
-/* Manager Comments Heading */
-.manager-comments h2 {
-    font-size: 1.8rem;
+/* Navigation Buttons (Arrows) */
+.nav-button {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
     color: black;
-    font-weight: bold;
+    margin: 10px;
+    transition: color 0.3s ease;
+}
+
+.nav-button:hover {
+    color: red;
 }
 
 /* Manager Comments Text */

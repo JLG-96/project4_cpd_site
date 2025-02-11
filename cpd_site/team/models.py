@@ -94,13 +94,14 @@ class Profile(models.Model):
 
 class ManagerPost(models.Model):
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    title = models.CharField(
+        max_length=200, default="Manager's Comments")  # Allow custom headings
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)  # Track last update time
 
     def __str__(self):
         return self.title
+
 
 
 class PlayerAvailability(models.Model):
