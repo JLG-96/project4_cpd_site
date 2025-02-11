@@ -93,20 +93,23 @@
         </table>
     </div>
 
-    <!-- Manager's Comments -->
+    <!-- Manager's Comments (News Style) -->
     <div class="grid-item manager-comments">
-        <h2>MANAGER’S COMMENTS</h2>
 
-        <div id="manager-comment-container">
-            <h3 id="post-title">{{ manager_posts.0.title }}</h3>
-            <p id="post-content">{{ manager_posts.0.content }}</p>
-            <p id="post-date"><small>Posted on {{ manager_posts.0.created_at|date:"d/m/Y" }}</small></p>
+        <div id="manager-comment-container" class="news-card">
+            {% if manager_posts.0 == manager_posts|first %}
+                <span id="news-tag" class="news-tag">Latest Update</span>
+            {% endif %}
+            <h3 id="post-title" class="news-title">{{ manager_posts.0.title }}</h3>
+            <p id="post-content" class="news-content">{{ manager_posts.0.content }}</p>
+            <p id="post-date" class="news-date"><small>Posted on {{ manager_posts.0.created_at|date:"d/m/Y" }}</small></p>
         </div>
 
-        <button class="nav-button" onclick="changePost(-1)">&#9664;</button> <!-- Left arrow -->
-        <button class="nav-button" onclick="changePost(1)">&#9654;</button> <!-- Right arrow -->
+        <!-- Navigation Arrows -->
+        <button class="nav-button" onclick="changePost(-1)">&#9664;</button>
+        <button class="nav-button" onclick="changePost(1)">&#9654;</button>
 
-        <!-- Hidden JSON Data for JavaScript -->
+        <!-- JavaScript for Cycling Posts -->
         <script>
             const managerPosts = [
                 {% for post in manager_posts %}
@@ -130,9 +133,18 @@
                 document.getElementById("post-title").innerHTML = managerPosts[currentIndex].title;
                 document.getElementById("post-content").innerHTML = managerPosts[currentIndex].content;
                 document.getElementById("post-date").innerHTML = `<small>Posted on ${managerPosts[currentIndex].date}</small>`;
+
+                // Hide or show the "Latest Update" tag for the most recent post
+                const newsTag = document.getElementById("news-tag");
+                if (currentIndex === 0) {
+                    newsTag.style.display = "inline-block";
+                } else {
+                    newsTag.style.display = "none";
+                }
             }
         </script>
     </div>
+
 
 </section>
 
