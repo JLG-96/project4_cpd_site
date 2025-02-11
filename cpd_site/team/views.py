@@ -17,7 +17,8 @@ def home(request):
     ).order_by('date', 'time').first()
 
     # Fetch league standings
-    league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+    league_table = Team.objects.all().order_by(
+        '-points', '-goals_for', 'goals_against')
 
     # Find CPD's actual position in the league
     cpd_team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
@@ -27,9 +28,13 @@ def home(request):
     top_teams = list(league_table[:3])
 
     # Ensure CPD is included at the correct position
-    league_preview = [{"position": i + 1, "name": t.name, "points": t.points} for i, t in enumerate(top_teams)]
+    league_preview = [{
+        "position": i + 1, "name": t.name, "points": t.points} for i,
+        t in enumerate(top_teams)]
     if cpd_team and cpd_team not in top_teams:
-        league_preview.append({"position": cpd_position, "name": cpd_team.name, "points": cpd_team.points})
+        league_preview.append({
+            "position": cpd_position, "name": cpd_team.name,
+            "points": cpd_team.points})
 
     # Fetch only the last 5 manager posts
     manager_posts = ManagerPost.objects.order_by("-created_at")[:5]
@@ -68,11 +73,13 @@ def manager_dashboard(request):
 
     posts = ManagerPost.objects.all().order_by("-created_at")
 
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by(
+        "date", "time")
 
     fixture_availability = {}
     for fixture in upcoming_fixtures:
-        fixture_availability[fixture.id] = list(PlayerAvailability.objects.filter(fixture=fixture))
+        fixture_availability[fixture.id] = list(
+            PlayerAvailability.objects.filter(fixture=fixture))
 
     # Debugging: Print data to console
     print("Upcoming Fixtures:", upcoming_fixtures)
@@ -97,10 +104,13 @@ def player_dashboard(request):
     if user_profile.role != "player":
         return render(request, "team/access_denied.html")
 
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by(
+        "date", "time")
 
     # Get existing availability for the logged-in player
-    fixture_availability = {pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)}
+    fixture_availability = {
+        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(
+            player=request.user)}
 
     if request.method == "POST":
         for fixture in upcoming_fixtures:
@@ -121,7 +131,7 @@ def player_dashboard(request):
 
 @login_required
 def create_profile(request):
-    """Allows users to create a profile if they don’t have one."""
+    """Allows users to create a profile if they don't have one."""
     if Profile.objects.filter(user=request.user).exists():
         return redirect("home")
 
@@ -131,7 +141,9 @@ def create_profile(request):
             profile = form.save(commit=False)
             profile.user = request.user
             profile.save()
-            return redirect("manager_dashboard" if profile.role == "manager" else "player_dashboard")
+            return redirect(
+                "manager_dashboard" if profile.role ==
+                "manager" else "player_dashboard")
     else:
         form = ProfileForm()
 
@@ -143,18 +155,21 @@ def results_view(request):
     past_fixtures = Fixture.objects.filter(
         match_completed=True).order_by('-date', '-time')
 
-    return render(request, "team/results.html", {"past_fixtures": past_fixtures})
+    return render(request, "team/results.html", {
+        "past_fixtures": past_fixtures})
 
 
 def fixtures_view(request):
     """View to display only upcoming fixtures."""
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
-    return render(request, "team/fixtures.html", {"upcoming_fixtures": upcoming_fixtures})
+    return render(request, "team/fixtures.html", {
+        "upcoming_fixtures": upcoming_fixtures})
 
 
 def league_table(request):
     """View for displaying league table standings."""
-    teams = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+    teams = Team.objects.all().order_by(
+        '-points', '-goals_for', 'goals_against')
     return render(request, 'team/league_table.html', {'teams': teams})
 
 
@@ -170,9 +185,10 @@ def edit_manager_post(request, post_id):
         form = ManagerPostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
-            return redirect("manager_dashboard")  # Redirect after saving
+            return redirect("home")  # Redirect to homepage after saving
 
     else:
         form = ManagerPostForm(instance=post)
 
-    return render(request, "team/edit_manager_post.html", {"form": form, "post": post})
+    return render(request, "team/edit_manager_post.html", {
+        "form": form, "post": post})

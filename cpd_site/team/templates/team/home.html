@@ -95,19 +95,28 @@
 
     <!-- Manager's Comments (News Style) -->
     <div class="grid-item manager-comments">
-
         <div id="manager-comment-container" class="news-card">
-            {% if manager_posts.0 == manager_posts|first %}
-                <span id="news-tag" class="news-tag">Latest Update</span>
+            {% if manager_posts %}
+                {% if manager_posts.0 == manager_posts|first %}
+                    <span id="news-tag" class="news-tag">Latest Update</span>
+                {% endif %}
+                <h3 id="post-title" class="news-title">{{ manager_posts.0.title }}</h3>
+                <p id="post-content" class="news-content">{{ manager_posts.0.content }}</p>
+                <p id="post-date" class="news-date"><small>Posted on {{ manager_posts.0.created_at|date:"d/m/Y" }}</small></p>
+                
+                <!-- EDIT BUTTON: Visible only to the manager who posted it -->
+                {% if request.user.is_authenticated and request.user == manager_posts.0.manager %}
+                    <a href="{% url 'edit_manager_post' manager_posts.0.id %}" class="edit-button">Edit</a>
+                {% endif %}
+            {% else %}
+                <p>No recent comments from the manager.</p>
             {% endif %}
-            <h3 id="post-title" class="news-title">{{ manager_posts.0.title }}</h3>
-            <p id="post-content" class="news-content">{{ manager_posts.0.content }}</p>
-            <p id="post-date" class="news-date"><small>Posted on {{ manager_posts.0.created_at|date:"d/m/Y" }}</small></p>
         </div>
 
         <!-- Navigation Arrows -->
         <button class="nav-button" onclick="changePost(-1)">&#9664;</button>
         <button class="nav-button" onclick="changePost(1)">&#9654;</button>
+    </div>
 
         <!-- JavaScript for Cycling Posts -->
         <script>

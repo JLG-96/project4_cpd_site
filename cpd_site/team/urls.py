@@ -19,6 +19,8 @@ urlpatterns = [
     path("manager-dashboard/", manager_dashboard, name="manager_dashboard"),
     path("player-dashboard/", player_dashboard, name="player_dashboard"),
     path("create-profile/", create_profile, name="create_profile"),
-    path("accounts/logout/", LogoutView.as_view(next_page="home"), name="logout"),
-    path("manager_post/edit/<int:post_id>/", edit_manager_post, name="edit_manager_post"),
+    path("accounts/logout/", LogoutView.as_view(next_page="home"),
+         name="logout"),
+    path("manager_post/edit/<int:post_id>/",
+         edit_manager_post, name="edit_manager_post"),
     ]
