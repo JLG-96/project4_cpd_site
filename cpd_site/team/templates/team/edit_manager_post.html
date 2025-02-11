@@ -1,11 +1,11 @@
 {% extends "team/base.html" %}
 
 {% block content %}
-    <h2>Edit Manager's Comment</h2>
+    <h2>Edit News Post</h2>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save Changes</button>
+        <button type="submit" class="save-button">Save Changes</button>
     </form>
-    <a href="{% url 'manager_dashboard' %}">Cancel</a>
+    <a href="{% url 'home' %}" class="cancel-button">Cancel</a>
 {% endblock %}

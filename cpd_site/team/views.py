@@ -114,7 +114,8 @@ def player_dashboard(request):
 
     if request.method == "POST":
         for fixture in upcoming_fixtures:
-            availability_status = request.POST.get(f"availability_{fixture.id}")
+            availability_status = request.POST.get(
+                f"availability_{fixture.id}")
             if availability_status:
                 PlayerAvailability.objects.update_or_create(
                     player=request.user, fixture=fixture,
@@ -161,7 +162,8 @@ def results_view(request):
 
 def fixtures_view(request):
     """View to display only upcoming fixtures."""
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(
+        match_completed=False).order_by("date", "time")
     return render(request, "team/fixtures.html", {
         "upcoming_fixtures": upcoming_fixtures})
 
