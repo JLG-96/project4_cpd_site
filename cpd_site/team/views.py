@@ -1,8 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Team, Fixture, Profile, PlayerAvailability, ManagerMessage
-from .forms import (ProfileForm, ManagerPostForm, ManagerPost, ManagerMessageForm)
+from .forms import (ProfileForm,
+                    ManagerPostForm,
+                    ManagerPost,
+                    ManagerMessageForm)
 from django.contrib import messages
+
 
 def home(request):
     """Fetches team details, upcoming fixture, and league standings."""
@@ -48,7 +52,8 @@ def home(request):
 
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions, including setting availability."""
+    """View for player-specific actions, including setting availability and displaying manager messages."""
+    
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
@@ -59,9 +64,13 @@ def player_dashboard(request):
 
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
 
+    # Fetch latest messages from the manager (only last 5 messages)
+    manager_messages = ManagerMessage.objects.all().order_by("-created_at")[:5]
+
     # Get existing availability for the logged-in player
     fixture_availability = {
-        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)}
+        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)
+    }
 
     if request.method == "POST":
         for fixture in upcoming_fixtures:
@@ -76,7 +85,8 @@ def player_dashboard(request):
 
     return render(request, "team/player_dashboard.html", {
         "upcoming_fixtures": upcoming_fixtures,
-        "fixture_availability": fixture_availability
+        "fixture_availability": fixture_availability,
+        "manager_messages": manager_messages,  # Pass messages to template
     })
 
 

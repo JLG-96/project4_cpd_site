@@ -26,6 +26,24 @@
 </nav>
 <div class="dashboard-container">
     <h1>Player Dashboard</h1>
+    
+    <!-- Manager Messages Section -->
+    <div class="manager-messages">
+        <h2>Message from the Manager</h2>
+        
+        {% if manager_messages %}
+            {% for message in manager_messages %}
+                <div class="message-card">
+                    <h3>{{ message.title }}</h3>
+                    <p>{{ message.content }}</p>
+                    <p class="message-date"><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No messages from the manager.</p>
+        {% endif %}
+    </div>
+
 
     <!-- Availability Selection -->
     <div class="dashboard-section">
