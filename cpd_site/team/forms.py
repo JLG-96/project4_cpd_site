@@ -1,5 +1,9 @@
 from django import forms
-from .models import ManagerPost, PlayerAvailability, Profile, ManagerMessage
+from .models import (ManagerPost,
+                     PlayerAvailability,
+                     Profile,
+                     ManagerMessage,
+                     ManagerMessageComment)
 
 
 class ManagerPostForm(forms.ModelForm):
@@ -24,3 +28,13 @@ class ManagerMessageForm(forms.ModelForm):
     class Meta:
         model = ManagerMessage
         fields = ["title", "content"]
+
+
+class ManagerMessageCommentForm(forms.ModelForm):
+    class Meta:
+        model = ManagerMessageComment
+        fields = ["content"]
+        widgets = {
+            "content": forms.Textarea(attrs={
+                "rows": 2, "placeholder": "Write a comment..."}),
+        }

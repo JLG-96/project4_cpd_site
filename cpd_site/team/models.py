@@ -129,3 +129,14 @@ class ManagerMessage(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ManagerMessageComment(models.Model):
+    message = models.ForeignKey(
+        'ManagerMessage', on_delete=models.CASCADE, related_name="comments")
+    player = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.player.username} on {self.message.title}"

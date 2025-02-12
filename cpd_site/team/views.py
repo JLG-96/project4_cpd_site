@@ -1,16 +1,22 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Team, Fixture, Profile, PlayerAvailability, ManagerMessage
+from .models import (Team,
+                     Fixture,
+                     Profile,
+                     PlayerAvailability,
+                     ManagerMessage,
+                     ManagerMessageComment)
 from .forms import (ProfileForm,
                     ManagerPostForm,
                     ManagerPost,
-                    ManagerMessageForm)
+                    ManagerMessageForm,
+                    ManagerMessageCommentForm)
 from django.contrib import messages
 
 
 def home(request):
     """Fetches team details, upcoming fixture, and league standings."""
-    
+
     # Fetch the team
     team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
 
@@ -52,8 +58,9 @@ def home(request):
 
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions, including setting availability and displaying manager messages."""
-    
+    """View for player-specific actions, including setting availability and 
+        commenting on manager messages."""
+
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
@@ -62,31 +69,39 @@ def player_dashboard(request):
     if user_profile.role != "player":
         return render(request, "team/access_denied.html")
 
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(
+        match_completed=False).order_by("date", "time")
 
     # Fetch latest messages from the manager (only last 5 messages)
-    manager_messages = ManagerMessage.objects.all().order_by("-created_at")[:5]
+    manager_messages = ManagerMessage.objects.prefetch_related(
+        "comments").order_by("-created_at")[:5]
 
-    # Get existing availability for the logged-in player
+    # Handle comment submission
+    if request.method == "POST" and "submit_comment" in request.POST:
+        message_id = request.POST.get("message_id")
+        message = get_object_or_404(ManagerMessage, id=message_id)
+        comment_form = ManagerMessageCommentForm(request.POST)
+
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.player = request.user
+            comment.message = message
+            comment.save()
+            return redirect("player_dashboard")
+
+    else:
+        comment_form = ManagerMessageCommentForm()
+
     fixture_availability = {
-        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)
+        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(
+            player=request.user)
     }
-
-    if request.method == "POST":
-        for fixture in upcoming_fixtures:
-            availability_status = request.POST.get(f"availability_{fixture.id}")
-            if availability_status:
-                PlayerAvailability.objects.update_or_create(
-                    player=request.user, fixture=fixture,
-                    defaults={"status": availability_status}
-                )
-        messages.success(request, "Availability updated successfully.")
-        return redirect("player_dashboard")
 
     return render(request, "team/player_dashboard.html", {
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
-        "manager_messages": manager_messages,  # Pass messages to template
+        "manager_messages": manager_messages,  # Messages with comments
+        "comment_form": comment_form,  # Form for submitting comments
     })
 
 
