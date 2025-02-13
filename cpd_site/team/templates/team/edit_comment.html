@@ -1,11 +1,52 @@
 {% extends "team/base.html" %}
 
 {% block content %}
+<div class="comment-edit-container">
     <h2>Edit Your Comment</h2>
+    
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Changes</button>
+        <div class="comment-box">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn-save">Save Changes</button>
+        <a href="{% url 'player_dashboard' %}" class="btn-cancel">Cancel</a>
     </form>
-    <a href="{% url 'player_dashboard' %}">Cancel</a>
+</div>
+
+<style>
+    .comment-edit-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #f8f8f8;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .comment-box {
+        margin-bottom: 15px;
+    }
+    .btn-save {
+        background-color: #28a745;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-save:hover {
+        background-color: #218838;
+    }
+    .btn-cancel {
+        display: inline-block;
+        margin-left: 10px;
+        color: #dc3545;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .btn-cancel:hover {
+        text-decoration: underline;
+    }
+</style>
+
 {% endblock %}

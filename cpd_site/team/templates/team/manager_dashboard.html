@@ -92,7 +92,7 @@
     </div>
     <!-- Manager Messages Section -->
     <div class="to-players-section">
-        <h2 class="section-title">TO THE PLAYERS</h2>
+        <h2 class="section-title">Send a message to the players</h2>
         
         <form method="POST">
             {% csrf_token %}
@@ -106,19 +106,53 @@
             </div>
             <button type="submit" class="send-message-btn">Send Message</button>
         </form>
-    
-        <h3 class="sent-messages-header">Sent Messages</h3>
-        <div class="sent-messages">
+    <hr>
+        <h2>Messages and comments</h2>
             {% for message in sent_messages %}
-                <div class="message-card">
-                    <h4 class="message-title">{{ message.title }}</h4>
-                    <p class="message-content">{{ message.content }}</p>
-                    <p class="message-date">Sent on {{ message.created_at|date:"d/m/Y" }}</p>
+                <div class="message-box">
+                    <h3>{{ message.title }}</h3>
+                    <p>{{ message.content }}</p>
+                    <p><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
+
+                    <!-- Display Comments -->
+                    <h4>Player Comments:</h4>
+                    {% if message.comments.all %}
+                        <ul class="comment-list">
+                            {% for comment in message.comments.all %}
+                                <li><strong>{{ comment.player.username }}:</strong> {{ comment.content }}
+                                    <br><small>Posted on {{ comment.created_at|date:"d/m/Y" }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No comments yet.</p>
+                    {% endif %}
                 </div>
-            {% empty %}
-                <p class="no-messages">No messages sent yet.</p>
             {% endfor %}
-        </div>
+
+            <style>
+                .message-box {
+                    background: #fff;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    margin-bottom: 15px;
+                }
+
+                .comment-list {
+                    list-style: none;  /* ✅ Removes bullet points */
+                    padding-left: 0;   /* ✅ Removes default indentation */
+                }
+
+                .comment-list li {
+                    padding: 8px 0;
+                    border-bottom: 1px solid #ddd;  /* ✅ Adds a subtle separator */
+                }
+
+                .comment-list li:last-child {
+                    border-bottom: none;
+                }
+            </style>
     </div>
     
 {% endblock %}
