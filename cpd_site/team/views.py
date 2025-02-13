@@ -1,17 +1,18 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import (Team,
                      Fixture,
                      Profile,
                      PlayerAvailability,
                      ManagerMessage,
-                     ManagerMessageComment)
+                     ManagerMessageComment,
+                     Notification)
 from .forms import (ProfileForm,
                     ManagerPostForm,
                     ManagerPost,
                     ManagerMessageForm,
                     ManagerMessageCommentForm)
-from django.contrib import messages
 
 
 def home(request):
@@ -59,25 +60,31 @@ def home(request):
     return render(request, "team/home.html", context)
 
 
+def create_notification(recipient, type, message, link=None):
+    """Creates a new notification for the given recipient."""
+    Notification.objects.create(
+        recipient=recipient,
+        type=type,
+        message=message,
+        link=link
+    )
+
+
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions, including setting availability and 
-        commenting on manager messages."""
+    """View for player-specific actions including setting availability, 
+    commenting on manager messages, and viewing notifications."""
 
-    try:
-        user_profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        return redirect("create_profile")
+    if request.user.profile.role != "player":
+        return redirect("home")
 
-    if user_profile.role != "player":
-        return render(request, "team/access_denied.html")
+    notifications = Notification.objects.filter(recipient=request.user, is_read=False).order_by("-created_at")
 
-    upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
 
     # Fetch latest messages from the manager (only last 5 messages)
-    manager_messages = ManagerMessage.objects.prefetch_related(
-        "comments").order_by("-created_at")[:5]
+    manager_messages = ManagerMessage.objects.prefetch_related("comments").order_by("-created_at")[:5]
+    print("📩 Retrieved Manager Messages:", manager_messages)  # Debugging line
 
     # Handle comment submission
     if request.method == "POST" and "submit_comment" in request.POST:
@@ -90,21 +97,30 @@ def player_dashboard(request):
             comment.player = request.user
             comment.message = message
             comment.save()
+
+            # Notify the manager
+            create_notification(
+                recipient=message.manager,
+                type="comment",
+                message=f"{request.user.username} has commented on your message: {message.title}.",
+                link="/manager-dashboard/"
+            )
+
             return redirect("player_dashboard")
 
     else:
         comment_form = ManagerMessageCommentForm()
 
     fixture_availability = {
-        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(
-            player=request.user)
+        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)
     }
 
     return render(request, "team/player_dashboard.html", {
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
-        "manager_messages": manager_messages,  # Messages with comments
-        "comment_form": comment_form,  # Form for submitting comments
+        "manager_messages": manager_messages,
+        "comment_form": comment_form,
+        "notifications": notifications,
     })
 
 
@@ -176,16 +192,18 @@ def edit_manager_post(request, post_id):
 
 @login_required
 def manager_dashboard(request):
-    """View for manager-specific actions."""
-    try:
-        user_profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        return redirect("create_profile")
+    """View for manager actions, including posting announcements, sending messages, and managing notifications."""
 
-    if user_profile.role != "manager":
-        return render(request, "team/access_denied.html")
+    if request.user.profile.role != "manager":
+        return redirect("home")
 
-    # Handling manager posts
+    notifications = Notification.objects.filter(recipient=request.user, is_read=False).order_by("-created_at")
+
+    # Ensure form variables are defined outside of the if-block
+    post_form = ManagerPostForm()
+    message_form = ManagerMessageForm()  # ✅ Fix: Define it here to avoid UnboundLocalError
+
+    # Manager posts announcements
     if request.method == "POST" and "post_announcement" in request.POST:
         post_form = ManagerPostForm(request.POST)
         if post_form.is_valid():
@@ -193,46 +211,48 @@ def manager_dashboard(request):
             post.manager = request.user
             post.save()
 
-    else:
-        post_form = ManagerPostForm()
-
-    # Handling messages to players
+    # Manager sends messages to players
     if request.method == "POST" and "send_message" in request.POST:
         message_form = ManagerMessageForm(request.POST)
         if message_form.is_valid():
             message = message_form.save(commit=False)
             message.manager = request.user
             message.save()
+            print("✅ Manager Message Sent:", message)  # Debugging
+
+            # Notify all players
+            players = User.objects.filter(profile__role="player")
+            for player in players:
+                create_notification(
+                    recipient=player,
+                    type="message",
+                    message="Your manager has sent a new message.",
+                    link="/player-dashboard/"
+                )
+
             return redirect("manager_dashboard")
 
-    else:
-        message_form = ManagerMessageForm()
-
-    # Fetch all manager posts and messages
+    # Fetch manager posts and sent messages
     posts = ManagerPost.objects.all().order_by("-created_at")
-    sent_messages = ManagerMessage.objects.prefetch_related(
-        "comments").order_by("-created_at")
+    sent_messages = ManagerMessage.objects.all().order_by("-created_at")
 
-    upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time")
+    # Fetch upcoming fixtures
+    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
 
     fixture_availability = {
         fixture.id: list(PlayerAvailability.objects.filter(fixture=fixture))
         for fixture in upcoming_fixtures
     }
 
-    return render(
-        request,
-        "team/manager_dashboard.html",
-        {
-            "post_form": post_form,
-            "posts": posts,
-            "message_form": message_form,
-            "sent_messages": sent_messages,
-            "upcoming_fixtures": upcoming_fixtures,
-            "fixture_availability": fixture_availability,
-        },
-    )
+    return render(request, "team/manager_dashboard.html", {
+        "post_form": post_form,
+        "message_form": message_form,  # ✅ Now it will always exist
+        "posts": posts,
+        "sent_messages": sent_messages,
+        "upcoming_fixtures": upcoming_fixtures,
+        "fixture_availability": fixture_availability,
+        "notifications": notifications,
+    })
 
 
 @login_required

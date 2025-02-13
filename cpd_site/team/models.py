@@ -140,3 +140,25 @@ class ManagerMessageComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.player.username} on {self.message.title}"
+    
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ("fixture", "New Fixture"),
+        ("availability", "Player Availability Update"),
+        ("message", "New Manager Message"),
+        ("comment", "New Comment"),
+    ]
+
+    recipient = models.ForeignKey(
+        User, on_delete=models.CASCADE)  # Who gets the notification
+    type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    message = models.TextField()
+    link = models.URLField(
+        blank=True, null=True)  # Where the notification redirects
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)  # Marks if it's been seen
+
+    def __str__(self):
+        return f"{self.recipient.username} - {
+            self.get_type_display()} ({'Read' if self.is_read else 'Unread'})"

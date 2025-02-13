@@ -833,6 +833,45 @@ details ul li {
     font-size: 0.9rem;
 }
 
+/* Notifications */
+.notification-badge {
+    background: red;
+    color: white;
+    font-size: 12px;
+    padding: 5px;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+}
+
+.notifications-section {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.notification-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.notification-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-list li.new-notification {
+    font-weight: bold;
+    color: red;
+}
+
+.notification-list li:last-child {
+    border-bottom: none;
+}
+
 @media (max-width: 768px) {
     .homepage-grid {
         grid-template-columns: 1fr;
