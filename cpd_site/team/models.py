@@ -78,10 +78,26 @@ class Fixture(models.Model):
     goals_against = models.PositiveIntegerField(null=True, blank=True)
     match_completed = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        """Override save to notify players when a new fixture is added"""
+        is_new = self.pk is None  # Check if this is a new fixture
+        super().save(*args, **kwargs)  # Save fixture first
+
+        if is_new:
+            from .models import Notification, Profile  # Import inside to avoid circular imports
+            players = User.objects.filter(profile__role="player")
+            for player in players:
+                Notification.objects.create(
+                    recipient=player,
+                    type="fixture",
+                    message=f"A new fixture has been scheduled against {self.opponent}.",
+                    link="/fixtures/"
+                )
+
     def __str__(self):
         opponent_name = self.opponent.name if self.opponent else "Unknown Team"
-        return f"{opponent_name} - {self.date} ({'Home' if self.home_or_away ==
-                                                 'H' else 'Away'})"
+        return f"{opponent_name} - {
+            self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
 
 
 class Profile(models.Model):
