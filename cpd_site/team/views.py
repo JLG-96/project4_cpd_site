@@ -78,13 +78,18 @@ def player_dashboard(request):
     if request.user.profile.role != "player":
         return redirect("home")
 
-    notifications = Notification.objects.filter(recipient=request.user, is_read=False).order_by("-created_at")
+    # Fetch notifications for the logged-in player (not admin!)
+    notifications = Notification.objects.filter(
+        recipient=request.user, is_read=False
+    ).order_by("-created_at")
+
+    print("🔍 Player Notifications:", notifications)  # Debugging
 
     upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
 
     # Fetch latest messages from the manager (only last 5 messages)
     manager_messages = ManagerMessage.objects.prefetch_related("comments").order_by("-created_at")[:5]
-    print("📩 Retrieved Manager Messages:", manager_messages)  # Debugging line
+    print("Retrieved Manager Messages:", manager_messages)  # Debugging line
 
     # Handle comment submission
     if request.method == "POST" and "submit_comment" in request.POST:
@@ -111,8 +116,40 @@ def player_dashboard(request):
     else:
         comment_form = ManagerMessageCommentForm()
 
+    # Handle player availability submission
+    if request.method == "POST" and "set_availability" in request.POST:
+        fixture_id = request.POST.get("fixture_id")
+        status = request.POST.get("status")  # 'yes' or 'no'
+
+        fixture = get_object_or_404(Fixture, id=fixture_id)
+        availability, created = PlayerAvailability.objects.update_or_create(
+            player=request.user,
+            fixture=fixture,
+            defaults={"status": status}
+        )
+
+        print(f"Availability Updated: {availability}, Created: {created}")  # Debugging
+
+        # Notify the manager
+        manager = User.objects.filter(profile__role="manager").first()
+        if manager:
+            notification = Notification.objects.create(
+                recipient=manager,
+                type="availability",
+                message=f"{request.user.username} has updated availability for {fixture.opponent}.",
+                link="/manager-dashboard/"
+            )
+            print(f"Notification Created: {notification}")  # Debugging
+
+        return redirect("player_dashboard")
+
+    # Fetch player availability correctly
     fixture_availability = {
-        pa.fixture.id: pa.status for pa in PlayerAvailability.objects.filter(player=request.user)
+        fixture.id: {
+            "yes": PlayerAvailability.objects.filter(fixture=fixture, status="yes").count(),
+            "no": PlayerAvailability.objects.filter(fixture=fixture, status="no").count(),
+        }
+        for fixture in upcoming_fixtures
     }
 
     return render(request, "team/player_dashboard.html", {
@@ -197,11 +234,17 @@ def manager_dashboard(request):
     if request.user.profile.role != "manager":
         return redirect("home")
 
-    notifications = Notification.objects.filter(recipient=request.user, is_read=False).order_by("-created_at")
+    # Fetch only notifications meant for the manager
+    notifications = Notification.objects.filter(
+        recipient__profile__role="manager",
+        is_read=False
+        ).order_by("-created_at")
+
+    print("🔍 Manager Notifications:", notifications)  # Debugging
 
     # Ensure form variables are defined outside of the if-block
     post_form = ManagerPostForm()
-    message_form = ManagerMessageForm()  # ✅ Fix: Define it here to avoid UnboundLocalError
+    message_form = ManagerMessageForm()  # Fix: Define it here to avoid UnboundLocalError
 
     # Manager posts announcements
     if request.method == "POST" and "post_announcement" in request.POST:
@@ -218,7 +261,7 @@ def manager_dashboard(request):
             message = message_form.save(commit=False)
             message.manager = request.user
             message.save()
-            print("✅ Manager Message Sent:", message)  # Debugging
+            print(" Manager Message Sent:", message)  # Debugging
 
             # Notify all players
             players = User.objects.filter(profile__role="player")
@@ -246,7 +289,7 @@ def manager_dashboard(request):
 
     return render(request, "team/manager_dashboard.html", {
         "post_form": post_form,
-        "message_form": message_form,  # ✅ Now it will always exist
+        "message_form": message_form,  # Now it will always exist
         "posts": posts,
         "sent_messages": sent_messages,
         "upcoming_fixtures": upcoming_fixtures,
@@ -285,3 +328,16 @@ def delete_comment(request, comment_id):
         comment.delete()
 
     return redirect("player_dashboard")  # Redirect back after deletion
+
+
+@login_required
+def mark_notification_read(request, notification_id):
+    """Marks a notification as read and redirects."""
+    notification = get_object_or_404(Notification, id=notification_id)
+
+    if request.method == "POST":
+        notification.is_read = True
+        notification.save()
+        return redirect(request.GET.get("next", "manager_dashboard"))
+
+    print(f"📩 Marking notification {notification_id} as read...")

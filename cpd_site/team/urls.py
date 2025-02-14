@@ -9,6 +9,7 @@ from .views import (home,
                     edit_manager_post,
                     edit_comment,
                     delete_comment,
+                    mark_notification_read,
                     )
 from django.contrib.auth.views import LogoutView
 
@@ -28,4 +29,5 @@ urlpatterns = [
     path("comment/edit/<int:comment_id>/", edit_comment, name="edit_comment"),
     path("comment/delete/<int:comment_id>/", delete_comment,
          name="delete_comment"),
+    path("notification/read/<int:notification_id>/", mark_notification_read, name="mark_notification_read"),
     ]

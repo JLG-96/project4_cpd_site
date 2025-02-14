@@ -44,24 +44,22 @@
         {% endif %}
     </div>
 
-</div>
-    
     <!-- Manager Messages Section -->
     <div class="manager-messages">
         <h2>Message from the Manager</h2>
-    
+
         {% if manager_messages %}
             {% for message in manager_messages %}
                 <div class="message-card">
                     <h3>{{ message.title }}</h3>
                     <p>{{ message.content }}</p>
                     <p class="message-date"><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
-    
+
                     <!-- Toggle Comments Button -->
                     <button class="toggle-comments" onclick="toggleComments({{ message.id }})">
                         Show Comments ({{ message.comments.count }})
                     </button>
-    
+
                     <!-- Comments Section (Hidden by Default) -->
                     <div id="comments-{{ message.id }}" class="comments-section" style="display: none;">
                         {% for comment in message.comments.all %}
@@ -71,12 +69,14 @@
 
                                 {% if request.user == comment.player %}
                                     <a href="{% url 'edit_comment' comment.id %}">Edit</a> |
-                                    <a href="{% url 'delete_comment' comment.id %}" onclick="return confirm(
-                                        'Are you sure you want to delete this comment?');">Delete</a>
+                                    <a href="{% url 'delete_comment' comment.id %}" 
+                                       onclick="return confirm('Are you sure you want to delete this comment?');">
+                                       Delete
+                                    </a>
                                 {% endif %}
                             </div>
                         {% endfor %}
-    
+
                         <!-- Comment Form -->
                         <form method="POST">
                             {% csrf_token %}
@@ -92,31 +92,41 @@
         {% endif %}
     </div>
 
+   <!-- Availability Selection -->
+<div class="dashboard-section">
+    <h2>Set Availability</h2>
 
-    <!-- Availability Selection -->
-    <div class="dashboard-section">
-        <h2>Set Availability</h2>
-        <form method="post">
-            {% csrf_token %}
-            {% for fixture in upcoming_fixtures %}
-                <div class="availability-card">
-                    <h3>{{ fixture.opponent }} - {{ fixture.date|date:"d/m/Y" }}</h3>
+    <div class="fixture-list">
+        {% for fixture in upcoming_fixtures %}
+        <div class="fixture-card">
+            <h3>{{ fixture.opponent }} - {{ fixture.points }} pts - {{ fixture.date|date:"d/m/Y" }}</h3>
+            <p>Location: {{ fixture.location }}</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="fixture_id" value="{{ fixture.id }}">
+
+                <div class="availability-options">
                     <label>
-                        <input type="radio" name="availability_{{ fixture.id }}" value="yes"
-                            {% if fixture_availability|get_item:fixture.id == "yes" %} checked {% endif %}>
+                        <input type="radio" name="status" value="yes"
+                            {% if fixture_availability|get_item:fixture.id == "yes" %}checked{% endif %}>
                         Available
                     </label>
+
                     <label>
-                        <input type="radio" name="availability_{{ fixture.id }}" value="no"
-                            {% if fixture_availability|get_item:fixture.id == "no" %} checked {% endif %}>
+                        <input type="radio" name="status" value="no"
+                            {% if fixture_availability|get_item:fixture.id == "no" %}checked{% endif %}>
                         Unavailable
                     </label>
                 </div>
-            {% endfor %}
-            <button type="submit" class="btn-submit">Save Availability</button>
-        </form>
+
+                <button type="submit" name="set_availability">Set Availability</button>
+            </form>
+        </div>
+        {% endfor %}
     </div>
 </div>
+
 <script>
     function toggleComments(messageId) {
         var commentsDiv = document.getElementById("comments-" + messageId);
@@ -127,4 +137,5 @@
         }
     }
 </script>
+
 {% endblock %}
