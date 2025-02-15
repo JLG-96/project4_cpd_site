@@ -194,23 +194,19 @@ def league_table(request):
 
 @login_required
 def edit_manager_post(request, post_id):
-    post = get_object_or_404(ManagerPost, id=post_id)
-
-    # Ensure only the manager who created the post can edit it
-    if request.user != post.manager:
-        return redirect("manager_dashboard")
+    """View to edit a specific manager's post."""
+    post = get_object_or_404(ManagerPost, id=post_id)  # ✅ Fetch correct post
 
     if request.method == "POST":
         form = ManagerPostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
-            return redirect("home")  # Redirect to homepage after saving
+            return redirect("home")  # ✅ Redirect back to homepage
 
     else:
         form = ManagerPostForm(instance=post)
 
-    return render(request, "team/edit_manager_post.html", {
-        "form": form, "post": post})
+    return render(request, "team/edit_manager_post.html", {"form": form, "post": post})
 
 
 @login_required
@@ -300,6 +296,7 @@ def manager_dashboard(request):
         for fixture in upcoming_fixtures
     }
 
+    posts = ManagerPost.objects.all().order_by("-created_at")
     return render(request, "team/manager_dashboard.html", {
         "post_form": post_form,
         "message_form": message_form,

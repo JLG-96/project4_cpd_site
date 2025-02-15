@@ -1,11 +1,128 @@
 {% extends "team/base.html" %}
 
 {% block content %}
-    <h2>Edit News Post</h2>
-    <form method="POST">
+<div class="edit-news-container">
+    <h2>Edit Post</h2>
+
+    <form method="POST" class="edit-news-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="save-button">Save Changes</button>
+        
+        <div class="form-group">
+            <label for="id_title">Title:</label>
+            <input type="text" name="title" id="id_title" class="input-field" value="{{ form.title.value }}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_content">Content:</label>
+            <textarea name="content" id="id_content" class="textarea-field">{{ form.content.value }}</textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Save Changes</button>
+            <a href="{% url 'home' %}" class="btn-cancel">Cancel</a>
+        </div>
     </form>
-    <a href="{% url 'home' %}" class="cancel-button">Cancel</a>
+</div>
+
+<!-- Styling -->
+<style>
+    /* Edit Post Container */
+.edit-news-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+/* Title */
+.edit-news-container {
+    max-width: 500px; /* Reduce the width slightly */
+    margin: 40px auto; /* Center it horizontally */
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Fields */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.input-field, 
+.textarea-field {
+    width: 100%; /* Ensure full width */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Prevents overflow */
+}
+
+.input-field:focus, 
+.textarea-field:focus {
+    border-color: #007bff;
+    background: #fff;
+    outline: none;
+}
+
+/* Textarea Styling */
+.textarea-field {
+    height: 150px;
+    resize: vertical;
+}
+
+/* Button Container */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Save & Cancel Buttons */
+.btn-save, .btn-cancel {
+    flex: 1;
+    padding: 12px 15px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Individual Button Styling */
+.btn-save {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn-save:hover {
+    background-color: #0056b3;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-cancel:hover {
+    background-color: #b52a3b;
+}
+
+</style>
 {% endblock %}
