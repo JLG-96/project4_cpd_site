@@ -122,7 +122,7 @@
         ">
             <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
             <h3>{{ fixture.opponent.name }}</h3>
-            
+
             {% if fixture.opponent.league_position %}
                 <p class="league-position">
                     {{ fixture.opponent.league_position }}
@@ -140,37 +140,39 @@
             <p>{{ fixture.date|date:"d/m/Y" }} at {{ fixture.time }}</p>
             <p>Location: {{ fixture.location }}</p>
 
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="fixture_id" value="{{ fixture.id }}">
-
-                <div class="availability-options">
-                    <label>
-                        <input type="radio" name="status" value="yes"
-                            {% if availability and availability.status == "yes" %}checked{% endif %}
-                            onchange="this.form.submit()">
-                        Available
-                    </label>
-
-                    <label>
-                        <input type="radio" name="status" value="no"
-                            {% if availability and availability.status == "no" %}checked{% endif %}
-                            onchange="this.form.submit()">
-                        Unavailable
-                    </label>
-                </div>
-
-                {% if not availability %}
-                <button type="submit" name="set_availability" class="availability-btn">
-                    Set Availability
-                </button>
-                {% endif %}
-            </form>
+            {% if availability %}
+                <!-- Availability is already set, show "Change Availability" button -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="fixture_id" value="{{ fixture.id }}">
+                    <button type="submit" name="reset_availability" class="change-availability-btn">
+                        Change Availability
+                    </button>
+                </form>
+            {% else %}
+                <!-- Availability not set yet, show radio buttons -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="fixture_id" value="{{ fixture.id }}">
+                    <div class="availability-options">
+                        <label>
+                            <input type="radio" name="status" value="yes"> Available
+                        </label>
+                        <label>
+                            <input type="radio" name="status" value="no"> Unavailable
+                        </label>
+                    </div>
+                    <button type="submit" name="set_availability" class="availability-btn">
+                        Set Availability
+                    </button>
+                </form>
+            {% endif %}
         </div>
         {% endwith %}
         {% endfor %}
     </div>
 </div>
+
 
 <!-- CSS for Improved Styling -->
 <style>

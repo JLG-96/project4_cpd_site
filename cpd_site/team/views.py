@@ -72,13 +72,12 @@ def create_notification(recipient, type, message, link=None):
 
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions including setting availability,
-    commenting on manager messages, and viewing notifications."""
-
+    """View for player-specific actions including setting and changing availability."""
+    
     if request.user.profile.role != "player":
         return redirect("home")
 
-    # Fetch notifications for the logged-in player (not admin)
+    # Fetch notifications for the logged-in player
     notifications = Notification.objects.filter(
         recipient=request.user, is_read=False
     ).order_by("-created_at")
@@ -88,9 +87,10 @@ def player_dashboard(request):
         match_completed=False
     ).order_by("date", "time")
 
-    # Get ordered league table and assign league positions
+    # Get ordered league table
     league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
 
+    # Assign league position dynamically
     for fixture in upcoming_fixtures:
         opponent_team = fixture.opponent
         if opponent_team:
@@ -99,26 +99,27 @@ def player_dashboard(request):
                     list(league_table).index(opponent_team) + 1
                 )
             except ValueError:
-                opponent_team.league_position = None  # If team isn't found in the league table
-
-    # Fetch latest manager messages (only last 5 messages)
-    manager_messages = ManagerMessage.objects.prefetch_related(
-        "comments"
-    ).order_by("-created_at")[:5]
+                opponent_team.league_position = None  
 
     # Handle player availability submission
-    if request.method == "POST" and "set_availability" in request.POST:
+    if request.method == "POST":
         fixture_id = request.POST.get("fixture_id")
-        status = request.POST.get("status")  # 'yes' or 'no'
-
         fixture = get_object_or_404(Fixture, id=fixture_id)
-        availability, created = PlayerAvailability.objects.update_or_create(
+
+        # Reset availability if "Change Availability" is clicked
+        if "reset_availability" in request.POST:
+            PlayerAvailability.objects.filter(player=request.user, fixture=fixture).delete()
+            return redirect("player_dashboard")
+
+        # Set new availability
+        status = request.POST.get("status")  # 'yes' or 'no'
+        PlayerAvailability.objects.update_or_create(
             player=request.user,
             fixture=fixture,
             defaults={"status": status}
         )
 
-        # Notify the manager
+        # Notify manager
         manager = User.objects.filter(profile__role="manager").first()
         if manager:
             Notification.objects.create(
@@ -130,31 +131,7 @@ def player_dashboard(request):
 
         return redirect("player_dashboard")
 
-    # Handle comment submission on manager messages
-    if request.method == "POST" and "submit_comment" in request.POST:
-        message_id = request.POST.get("message_id")
-        message = get_object_or_404(ManagerMessage, id=message_id)
-        comment_form = ManagerMessageCommentForm(request.POST)
-
-        if comment_form.is_valid():
-            comment = comment_form.save(commit=False)
-            comment.player = request.user
-            comment.message = message
-            comment.save()
-
-            # Notify the manager of the new comment
-            create_notification(
-                recipient=message.manager,
-                type="comment",
-                message=f"{request.user.username} has commented on your message: {message.title}.",
-                link="/manager-dashboard/"
-            )
-
-            return redirect("player_dashboard")
-    else:
-        comment_form = ManagerMessageCommentForm()
-
-    # Fetch player availability correctly
+    # Fetch player availability
     fixture_availability = {
         fixture.id: PlayerAvailability.objects.filter(
             player=request.user, fixture=fixture
@@ -165,11 +142,8 @@ def player_dashboard(request):
     return render(request, "team/player_dashboard.html", {
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
-        "manager_messages": manager_messages,
-        "comment_form": comment_form,
         "notifications": notifications,
     })
-
 
 
 @login_required

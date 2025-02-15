@@ -887,16 +887,16 @@ details ul li {
     transition: background-color 0.3s ease-in-out, border 0.3s ease-in-out;
 }
 
-/* Green for Available */
+/* Green background for Available */
 .availability-section .fixture-card.available-card {
-    background-color: #e6f9e6;
-    border: 2px solid #28a745;
+    background-color: #e6f9e6; /* Light green */
+    border: 2px solid #28a745; /* Green border */
 }
 
-/* Red for Unavailable */
+/* Red background for Unavailable */
 .availability-section .fixture-card.unavailable-card {
-    background-color: #f9e6e6;
-    border: 2px solid #dc3545;
+    background-color: #f9e6e6; /* Light red */
+    border: 2px solid #dc3545; /* Red border */
 }
 
 /* Keep Button Highlighted After Selection */
@@ -917,6 +917,25 @@ details ul li {
     font-weight: bold;
     margin-right: 15px;
     cursor: pointer;
+}
+
+/* Change Availability Button */
+.change-availability-btn {
+    background: #ff9800; /* Orange */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.change-availability-btn:hover {
+    background: #e68900;
 }
 
 
