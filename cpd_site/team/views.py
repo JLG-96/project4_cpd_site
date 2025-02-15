@@ -85,8 +85,23 @@ def player_dashboard(request):
 
     print("🔍 Player Notifications:", notifications)  # Debugging
 
+    # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
         match_completed=False).order_by("date", "time")
+
+    # Get ordered league table
+    league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+
+    # Assign league position dynamically
+    for fixture in upcoming_fixtures:
+        opponent_team = fixture.opponent
+        if opponent_team:
+            try:
+                opponent_team.league_position = (
+                    list(league_table).index(opponent_team) + 1
+                )
+            except ValueError:
+                opponent_team.league_position = None  # If team isn't found in the league table
 
     # Fetch latest messages from the manager (only last 5 messages)
     manager_messages = ManagerMessage.objects.prefetch_related(

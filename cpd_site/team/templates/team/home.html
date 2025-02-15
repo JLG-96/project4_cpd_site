@@ -98,7 +98,7 @@
         <div id="manager-comment-container" class="news-card">
             {% if manager_posts %}
                 {% if manager_posts.0 == manager_posts|first %}
-                    <span id="news-tag" class="news-tag">Latest Update</span>
+                    <span id="news-tag" class="news-tag">Latest</span>
                 {% endif %}
                 <h3 id="post-title" class="news-title">{{ manager_posts.0.title }}</h3>
                 <p id="post-content" class="news-content">{{ manager_posts.0.content }}</p>
