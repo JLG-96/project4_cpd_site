@@ -34,9 +34,14 @@
         {% if notifications %}
             <ul class="notification-list">
                 {% for notification in notifications %}
-                    <li class="{% if not notification.is_read %}new-notification{% endif %}">
-                        <a href="{{ notification.link }}">{{ notification.message }}</a>
-                    </li>
+                <li class="{% if not notification.is_read %}new-notification{% endif %}">
+                    {{ notification.message }}
+                    <form method="POST" action="{% url 'mark_notification_read' notification.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'player_dashboard' %}">
+                        <button type="submit" style="background:none; border:none; color:black; cursor:pointer;">Remove</button> 
+                    </form>
+                </li>
                 {% endfor %}
             </ul>
         {% else %}

@@ -332,12 +332,21 @@ def delete_comment(request, comment_id):
 
 @login_required
 def mark_notification_read(request, notification_id):
-    """Marks a notification as read and redirects."""
+    """Marks a notification as read and redirects to the appropriate dashboard."""
     notification = get_object_or_404(Notification, id=notification_id)
 
     if request.method == "POST":
         notification.is_read = True
         notification.save()
-        return redirect(request.GET.get("next", "manager_dashboard"))
+
+        # Determine correct redirect
+        next_page = request.POST.get("next")  # Check if next URL is provided in the form
+        if not next_page:  # If not provided, determine based on user role
+            if request.user.profile.role == "manager":
+                next_page = "manager_dashboard"
+            else:
+                next_page = "player_dashboard"
+
+        return redirect(next_page)
 
     print(f"📩 Marking notification {notification_id} as read...")
