@@ -88,7 +88,8 @@ def player_dashboard(request):
         match_completed=False).order_by("date", "time")
 
     # Get ordered league table
-    league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
+    league_table = Team.objects.all().order_by(
+        '-points', '-goals_for', 'goals_against')
 
     # Assign league position dynamically
     for fixture in upcoming_fixtures:
@@ -122,7 +123,9 @@ def player_dashboard(request):
             Notification.objects.create(
                 recipient=manager,
                 type="availability",
-                message=f"{request.user.username} has updated availability for {fixture.opponent}.",
+                message=f"{
+                    request.user.username} has updated availability for {
+                        fixture.opponent}.",
                 link="/manager-dashboard/"
             )
 
@@ -264,11 +267,11 @@ def manager_dashboard(request):
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time"
-    )
+        match_completed=False).order_by("date", "time")
 
     # Fetch ordered league table
-    league_table = list(Team.objects.all().order_by('-points', '-goals_for', 'goals_against'))
+    league_table = list(Team.objects.all().order_by(
+        '-points', '-goals_for', 'goals_against'))
 
     # Assign league position dynamically
     for index, team in enumerate(league_table, start=1):
@@ -280,7 +283,8 @@ def manager_dashboard(request):
         if opponent_team:
             try:
                 opponent_team.league_position = next(
-                    (team.league_position for team in league_table if team.id == opponent_team.id), None
+                    (team.league_position for team in league_table if
+                     team.id == opponent_team.id), None
                 )
             except StopIteration:
                 opponent_team.league_position = None  # If not found in table
