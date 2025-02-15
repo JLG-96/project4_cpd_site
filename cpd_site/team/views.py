@@ -234,11 +234,16 @@ def manager_dashboard(request):
 
     # Manager posts announcements
     if request.method == "POST" and "post_announcement" in request.POST:
-        post_form = ManagerPostForm(request.POST)
-        if post_form.is_valid():
-            post = post_form.save(commit=False)
-            post.manager = request.user
-            post.save()
+        announcement_content = request.POST.get("announcement")
+
+        if announcement_content:
+            # Delete the previous announcement before creating a new one
+            ManagerPost.objects.all().delete()
+
+            # Create a new announcement
+            ManagerPost.objects.create(
+                manager=request.user, content=announcement_content
+            )
 
     # Manager sends messages to players
     if request.method == "POST" and "send_message" in request.POST:
@@ -247,7 +252,7 @@ def manager_dashboard(request):
             message = message_form.save(commit=False)
             message.manager = request.user
             message.save()
-            print(" Manager Message Sent:", message)  # Debugging
+            print("📨 Manager Message Sent:", message)  # Debugging
 
             # Notify all players
             players = User.objects.filter(profile__role="player")
@@ -261,17 +266,21 @@ def manager_dashboard(request):
 
             return redirect("manager_dashboard")
 
-    # Fetch manager posts and sent messages
-    posts = ManagerPost.objects.all().order_by("-created_at")
+    # Fetch only the latest announcement
+    latest_post = ManagerPost.objects.all().order_by("-created_at").first()
+
+    # Fetch sent messages
     sent_messages = ManagerMessage.objects.all().order_by("-created_at")
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time")
+        match_completed=False
+    ).order_by("date", "time")
 
     # Fetch ordered league table
     league_table = list(Team.objects.all().order_by(
-        '-points', '-goals_for', 'goals_against'))
+        '-points', '-goals_for', 'goals_against'
+    ))
 
     # Assign league position dynamically
     for index, team in enumerate(league_table, start=1):
@@ -281,13 +290,10 @@ def manager_dashboard(request):
     for fixture in upcoming_fixtures:
         opponent_team = fixture.opponent
         if opponent_team:
-            try:
-                opponent_team.league_position = next(
-                    (team.league_position for team in league_table if
-                     team.id == opponent_team.id), None
-                )
-            except StopIteration:
-                opponent_team.league_position = None  # If not found in table
+            opponent_team.league_position = next(
+                (team.league_position for team in league_table if team.id == opponent_team.id), 
+                None
+            )
 
     fixture_availability = {
         fixture.id: list(PlayerAvailability.objects.filter(fixture=fixture))
@@ -296,8 +302,8 @@ def manager_dashboard(request):
 
     return render(request, "team/manager_dashboard.html", {
         "post_form": post_form,
-        "message_form": message_form,  # Now it will always exist
-        "posts": posts,
+        "message_form": message_form,
+        "latest_post": latest_post,  # Only the latest post is shown
         "sent_messages": sent_messages,
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
@@ -397,4 +403,17 @@ def delete_manager_message(request, message_id):
 
     message.delete()
     print("Message deleted successfully!")
+    return redirect("manager_dashboard")
+
+
+@login_required
+def delete_manager_post(request, post_id):
+    """Deletes the latest manager announcement."""
+    if request.user.profile.role != "manager":
+        return redirect("home")
+
+    # Get the post by ID and delete it
+    post = get_object_or_404(ManagerPost, id=post_id)
+    post.delete()
+
     return redirect("manager_dashboard")

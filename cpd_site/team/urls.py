@@ -12,6 +12,7 @@ from .views import (home,
                     mark_notification_read,
                     edit_manager_message,
                     delete_manager_message,
+                    delete_manager_post,
                     )
 from django.contrib.auth.views import LogoutView
 
@@ -37,4 +38,6 @@ urlpatterns = [
           name="edit_manager_message"),
      path("manager-message/delete/<int:message_id>/", delete_manager_message,
           name="delete_manager_message"),
+     path("delete-manager-post/<int:post_id>/", delete_manager_post,
+          name="delete_manager_post"),
     ]

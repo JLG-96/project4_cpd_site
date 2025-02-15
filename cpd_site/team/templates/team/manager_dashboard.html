@@ -63,14 +63,20 @@
             <button type="submit" name="post_announcement" class="btn-submit">Post</button>
         </form>
 
-        <!-- Display previous announcements -->
-        {% if posts %}
-            {% for post in posts %}
-                <div class="announcement">
-                    <p><strong>{{ post.manager.username }} - {{ post.created_at|date:"d/m/Y" }}</strong></p>
-                    <p>{{ post.content }}</p>
-                </div>
-            {% endfor %}
+        <!-- Display the latest announcement only -->
+        {% if latest_post %}
+            <div class="announcement">
+                <p><strong>{{ latest_post.manager.username }} - {{ latest_post.created_at|date:"d/m/Y" }}</strong></p>
+                <p>{{ latest_post.content }}</p>
+
+                <!-- Option to Delete the Latest Post -->
+                <form method="POST" action="{% url 'delete_manager_post' latest_post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete the latest update?');">
+                        Delete Latest Update
+                    </button>
+                </form>
+            </div>
         {% else %}
             <p>No announcements yet.</p>
         {% endif %}
@@ -154,12 +160,16 @@
 <script>
     function toggleMessage(id) {
         let content = document.getElementById(`message-${id}`);
-        content.style.display = (content.style.display === "none" || content.style.display === "") ? "block" : "none";
+        if (content) {
+            content.style.display = (content.style.display === "none" || content.style.display === "") ? "block" : "none";
+        }
     }
 
     function toggleComments(id) {
         let comments = document.getElementById(`comments-${id}`);
-        comments.style.display = (comments.style.display === "none" || comments.style.display === "") ? "block" : "none";
+        if (comments) {
+            comments.style.display = (comments.style.display === "none" || comments.style.display === "") ? "block" : "none";
+        }
     }
 </script>
 
@@ -247,7 +257,11 @@
 <div class="fixtures-container">
     {% for fixture in upcoming_fixtures %}
         <div class="fixture-card">
-            <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
+            {% if fixture.opponent.logo %}
+                <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
+            {% else %}
+                <img src="/static/default-logo.png" alt="Default Logo" class="fixture-logo">
+            {% endif %}
             <h3>{{ fixture.opponent.name }}</h3>
             
             {% if fixture.opponent.league_position %}
@@ -426,7 +440,7 @@
     background: #fff;
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    min-height: 200px; /* Ensures equal height */
+    min-height: auto;
     }
 
     .btn-edit {
