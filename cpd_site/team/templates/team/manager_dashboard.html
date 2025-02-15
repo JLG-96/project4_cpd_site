@@ -52,16 +52,35 @@
 
 <!-- Upcoming Fixtures Section -->
 {% if upcoming_fixtures %}
+<h2 class="section-title">Upcoming Fixtures</h2>
 <div class="fixtures-container">
     {% for fixture in upcoming_fixtures %}
         <div class="fixture-card">
-            <h3>{{ fixture.opponent }}</h3>
+            <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
+            <h3>{{ fixture.opponent.name }}</h3>
+            
+            {% if fixture.opponent.league_position %}
+                <p class="league-position">
+                    {{ fixture.opponent.league_position }}
+                    <sup>
+                        {% if fixture.opponent.league_position|slice:"-1:" == "1" and fixture.opponent.league_position != 11 %}st
+                        {% elif fixture.opponent.league_position|slice:"-1:" == "2" and fixture.opponent.league_position != 12 %}nd
+                        {% elif fixture.opponent.league_position|slice:"-1:" == "3" and fixture.opponent.league_position != 13 %}rd
+                        {% else %}th{% endif %}
+                    </sup> place
+                </p>
+            {% else %}
+                <p class="league-position">Position unavailable</p>
+            {% endif %}
+
+
             <p class="fixture-date">{{ fixture.date|date:"d/m/Y" }} at {{ fixture.time }}</p>
             <p class="fixture-location">Location: {{ fixture.location }}</p>
 
             <div class="availability">
+                <!-- Available Players Dropdown -->
                 <details>
-                    <summary>Available Players ({{ fixture_availability|get_item:fixture.id|yes_count }})</summary>
+                    <summary>▶ Available Players ({{ fixture_availability|get_item:fixture.id|yes_count }})</summary>
                     <ul>
                         {% for player in fixture_availability|get_item:fixture.id %}
                             {% if player.status == "yes" %}
@@ -73,8 +92,9 @@
                     </ul>
                 </details>
 
+                <!-- Unavailable Players Dropdown -->
                 <details>
-                    <summary>Unavailable Players ({{ fixture_availability|get_item:fixture.id|no_count }})</summary>
+                    <summary>▶ Unavailable Players ({{ fixture_availability|get_item:fixture.id|no_count }})</summary>
                     <ul>
                         {% for player in fixture_availability|get_item:fixture.id %}
                             {% if player.status == "no" %}
@@ -92,6 +112,69 @@
 {% else %}
 <p>No upcoming fixtures.</p>
 {% endif %}
+
+<!-- CSS Styling (Matches Player Dashboard) -->
+<style>
+    .section-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .fixtures-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        justify-content: center;
+        padding: 0 10px;
+    }
+
+    .fixture-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        text-align: center;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .fixture-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .fixture-logo {
+        max-width: 90px;
+        display: block;
+        margin: 0 auto 10px;
+    }
+
+    .league-position {
+        font-size: 14px;
+        font-weight: normal;
+        color: #666;
+        margin-top: -5px;
+    }
+
+    details {
+        text-align: left;
+        margin-top: 10px;
+        background: #f8f8f8;
+        padding: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    summary {
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    ul {
+        margin: 0;
+        padding-left: 15px;
+    }
+</style>
 
 <!-- Manager Posts -->
 <div class="dashboard-section">

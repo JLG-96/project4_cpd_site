@@ -221,7 +221,7 @@ def manager_dashboard(request):
     notifications = Notification.objects.filter(
         recipient__profile__role="manager",
         is_read=False
-        ).order_by("-created_at")
+    ).order_by("-created_at")
 
     print("🔍 Manager Notifications:", notifications)  # Debugging
 
@@ -264,7 +264,26 @@ def manager_dashboard(request):
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time")
+        match_completed=False).order_by("date", "time"
+    )
+
+    # Fetch ordered league table
+    league_table = list(Team.objects.all().order_by('-points', '-goals_for', 'goals_against'))
+
+    # Assign league position dynamically
+    for index, team in enumerate(league_table, start=1):
+        team.league_position = index
+
+    # Ensure upcoming fixtures display correct opponent league positions
+    for fixture in upcoming_fixtures:
+        opponent_team = fixture.opponent
+        if opponent_team:
+            try:
+                opponent_team.league_position = next(
+                    (team.league_position for team in league_table if team.id == opponent_team.id), None
+                )
+            except StopIteration:
+                opponent_team.league_position = None  # If not found in table
 
     fixture_availability = {
         fixture.id: list(PlayerAvailability.objects.filter(fixture=fixture))
