@@ -42,7 +42,7 @@ def home(request):
         t in enumerate(top_teams)]
     if cpd_team and cpd_team not in top_teams:
         league_preview.append({
-            "position": cpd_position, "name": cpd_team.name, 
+            "position": cpd_position, "name": cpd_team.name,
             "points": cpd_team.points})
 
     # Fetch only the last 5 manager posts
@@ -72,7 +72,7 @@ def create_notification(recipient, type, message, link=None):
 
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions including setting availability, 
+    """View for player-specific actions including setting availability,
     commenting on manager messages, and viewing notifications."""
 
     if request.user.profile.role != "player":
@@ -85,10 +85,12 @@ def player_dashboard(request):
 
     print("🔍 Player Notifications:", notifications)  # Debugging
 
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(
+        match_completed=False).order_by("date", "time")
 
     # Fetch latest messages from the manager (only last 5 messages)
-    manager_messages = ManagerMessage.objects.prefetch_related("comments").order_by("-created_at")[:5]
+    manager_messages = ManagerMessage.objects.prefetch_related(
+        "comments").order_by("-created_at")[:5]
     print("Retrieved Manager Messages:", manager_messages)  # Debugging line
 
     # Handle comment submission
@@ -107,7 +109,9 @@ def player_dashboard(request):
             create_notification(
                 recipient=message.manager,
                 type="comment",
-                message=f"{request.user.username} has commented on your message: {message.title}.",
+                message=f"{
+                    request.user.username} has commented on your message: {
+                        message.title}.",
                 link="/manager-dashboard/"
             )
 
@@ -136,7 +140,9 @@ def player_dashboard(request):
             notification = Notification.objects.create(
                 recipient=manager,
                 type="availability",
-                message=f"{request.user.username} has updated availability for {fixture.opponent}.",
+                message=f"{
+                    request.user.username} has updated availability for {
+                        fixture.opponent}.",
                 link="/manager-dashboard/"
             )
             print(f"Notification Created: {notification}")  # Debugging
@@ -146,8 +152,10 @@ def player_dashboard(request):
     # Fetch player availability correctly
     fixture_availability = {
         fixture.id: {
-            "yes": PlayerAvailability.objects.filter(fixture=fixture, status="yes").count(),
-            "no": PlayerAvailability.objects.filter(fixture=fixture, status="no").count(),
+            "yes": PlayerAvailability.objects.filter(
+                fixture=fixture, status="yes").count(),
+            "no": PlayerAvailability.objects.filter(
+                fixture=fixture, status="no").count(),
         }
         for fixture in upcoming_fixtures
     }
@@ -229,7 +237,7 @@ def edit_manager_post(request, post_id):
 
 @login_required
 def manager_dashboard(request):
-    """View for manager actions, including posting announcements, sending messages, and managing notifications."""
+    """View for manager actions."""
 
     if request.user.profile.role != "manager":
         return redirect("home")
@@ -244,7 +252,7 @@ def manager_dashboard(request):
 
     # Ensure form variables are defined outside of the if-block
     post_form = ManagerPostForm()
-    message_form = ManagerMessageForm()  # Fix: Define it here to avoid UnboundLocalError
+    message_form = ManagerMessageForm()
 
     # Manager posts announcements
     if request.method == "POST" and "post_announcement" in request.POST:
@@ -280,7 +288,8 @@ def manager_dashboard(request):
     sent_messages = ManagerMessage.objects.all().order_by("-created_at")
 
     # Fetch upcoming fixtures
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by("date", "time")
+    upcoming_fixtures = Fixture.objects.filter(
+        match_completed=False).order_by("date", "time")
 
     fixture_availability = {
         fixture.id: list(PlayerAvailability.objects.filter(fixture=fixture))
@@ -332,7 +341,7 @@ def delete_comment(request, comment_id):
 
 @login_required
 def mark_notification_read(request, notification_id):
-    """Marks a notification as read and redirects to the appropriate dashboard."""
+    """Marks a notification as read and keeps user on dashboard."""
     notification = get_object_or_404(Notification, id=notification_id)
 
     if request.method == "POST":
@@ -340,8 +349,8 @@ def mark_notification_read(request, notification_id):
         notification.save()
 
         # Determine correct redirect
-        next_page = request.POST.get("next")  # Check if next URL is provided in the form
-        if not next_page:  # If not provided, determine based on user role
+        next_page = request.POST.get("next")
+        if not next_page:
             if request.user.profile.role == "manager":
                 next_page = "manager_dashboard"
             else:
@@ -350,3 +359,44 @@ def mark_notification_read(request, notification_id):
         return redirect(next_page)
 
     print(f"📩 Marking notification {notification_id} as read...")
+
+
+@login_required
+def edit_manager_message(request, message_id):
+    """Allows the manager to edit a message sent to players."""
+    message = get_object_or_404(ManagerMessage, id=message_id)
+
+    # Ensure only the manager who created the message can edit it
+    if request.user != message.manager:
+        return redirect("manager_dashboard")
+
+    if request.method == "POST":
+        form = ManagerMessageForm(request.POST, instance=message)
+        if form.is_valid():
+            form.save()
+            return redirect("manager_dashboard")  # Redirect back after editing
+
+    else:
+        form = ManagerMessageForm(instance=message)
+
+    return render(request, "team/edit_manager_message.html", {
+        "form": form, "message": message})
+
+
+@login_required
+def delete_manager_message(request, message_id):
+    """Allows the manager to delete a message sent to players."""
+    message = get_object_or_404(ManagerMessage, id=message_id)
+
+    # Debugging: Print the current user and role
+    print(f"🗑 Attempting to delete message: {message.title}")
+    print(f"👤 Current User: {request.user.username}, Role: {request.user.profile.role}")
+
+    # Ensure only the manager who created the message can delete it
+    if request.user.profile.role != "manager":
+        print("Unauthorized deletion attempt!")
+        return redirect("manager_dashboard")
+
+    message.delete()
+    print("Message deleted successfully!")
+    return redirect("manager_dashboard")
