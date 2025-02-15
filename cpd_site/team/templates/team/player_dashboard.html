@@ -37,16 +37,17 @@
             {% if notifications %}
                 <ul class="notification-list">
                     {% for notification in notifications %}
-                        <li class="{% if not notification.is_read %}new-notification{% endif %}">
-                            <span {% if forloop.first %}class="latest-notification"{% endif %}>
-                                {{ notification.message }}
-                            </span>
-                            <form method="POST" action="{% url 'mark_notification_read' notification.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="next" value="{% url 'player_dashboard' %}">
-                                <button type="submit" class="remove-btn">Remove</button> 
-                            </form>
-                        </li>
+                    <li class="{% if not notification.is_read %}new-notification{% endif %}">
+                        {% if forloop.first %} 
+                            <span class="new-tag">NEW</span> 
+                        {% endif %}
+                        {{ notification.message }}
+                        <form method="POST" action="{% url 'mark_notification_read' notification.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'player_dashboard' %}">
+                            <button type="submit" style="background:none; border:none; color:black; cursor:pointer;">Remove</button> 
+                        </form>
+                    </li>
                     {% endfor %}
                 </ul>
             {% else %}

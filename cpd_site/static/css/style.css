@@ -872,6 +872,16 @@ details ul li {
     border-bottom: none;
 }
 
+.new-tag {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
 @media (max-width: 768px) {
     .homepage-grid {
         grid-template-columns: 1fr;
