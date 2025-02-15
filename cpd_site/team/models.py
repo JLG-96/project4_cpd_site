@@ -60,7 +60,7 @@ class Team(models.Model):
         self.save()
 
     def __str__(self):
-        return f"{self.name} - {self.points} pts"
+        return self.name
 
 
 class Fixture(models.Model):
@@ -90,14 +90,14 @@ class Fixture(models.Model):
                 Notification.objects.create(
                     recipient=player,
                     type="fixture",
-                    message=f"A new fixture has been scheduled against {self.opponent}.",
+                    message=f"A new fixture has been scheduled against {self.opponent.name}.",
                     link="/fixtures/"
                 )
 
     def __str__(self):
         opponent_name = self.opponent.name if self.opponent else "Unknown Team"
-        return f"{opponent_name} - {
-            self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
+        return f"{opponent_name} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
+
 
 
 class Profile(models.Model):

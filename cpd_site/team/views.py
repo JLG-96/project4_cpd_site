@@ -72,8 +72,9 @@ def create_notification(recipient, type, message, link=None):
 
 @login_required
 def player_dashboard(request):
-    """View for player-specific actions including setting and changing availability."""
-    
+    """View for player-specific actions including setting availability,
+    commenting on manager messages, and viewing notifications."""
+
     if request.user.profile.role != "player":
         return redirect("home")
 
@@ -84,8 +85,7 @@ def player_dashboard(request):
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False
-    ).order_by("date", "time")
+        match_completed=False).order_by("date", "time")
 
     # Get ordered league table
     league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
@@ -99,27 +99,24 @@ def player_dashboard(request):
                     list(league_table).index(opponent_team) + 1
                 )
             except ValueError:
-                opponent_team.league_position = None  
+                opponent_team.league_position = None
+
+    # Fetch **latest** manager messages (ensure messages exist)
+    manager_messages = ManagerMessage.objects.all().order_by("-created_at")[:5]
 
     # Handle player availability submission
-    if request.method == "POST":
+    if request.method == "POST" and "set_availability" in request.POST:
         fixture_id = request.POST.get("fixture_id")
-        fixture = get_object_or_404(Fixture, id=fixture_id)
-
-        # Reset availability if "Change Availability" is clicked
-        if "reset_availability" in request.POST:
-            PlayerAvailability.objects.filter(player=request.user, fixture=fixture).delete()
-            return redirect("player_dashboard")
-
-        # Set new availability
         status = request.POST.get("status")  # 'yes' or 'no'
+
+        fixture = get_object_or_404(Fixture, id=fixture_id)
         PlayerAvailability.objects.update_or_create(
             player=request.user,
             fixture=fixture,
             defaults={"status": status}
         )
 
-        # Notify manager
+        # Notify the manager
         manager = User.objects.filter(profile__role="manager").first()
         if manager:
             Notification.objects.create(
@@ -143,6 +140,7 @@ def player_dashboard(request):
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
         "notifications": notifications,
+        "manager_messages": manager_messages,  # ✅ Pass manager messages
     })
 
 
