@@ -110,13 +110,19 @@
 </div>
 
 <!-- Set Availability Section -->
-<div class="dashboard-section">
+<div class="dashboard-section availability-section">
     <h2 class="section-title">Set Availability</h2>
     <div class="fixture-grid">
         {% for fixture in upcoming_fixtures %}
-        <div class="fixture-card">
+        {% with fixture_availability|get_item:fixture.id as availability %}
+        <div class="fixture-card 
+            {% if availability and availability.status == 'yes' %} available-card
+            {% elif availability and availability.status == 'no' %} unavailable-card
+            {% endif %}
+        ">
             <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
             <h3>{{ fixture.opponent.name }}</h3>
+            
             {% if fixture.opponent.league_position %}
                 <p class="league-position">
                     {{ fixture.opponent.league_position }}
@@ -141,20 +147,27 @@
                 <div class="availability-options">
                     <label>
                         <input type="radio" name="status" value="yes"
-                            {% if fixture_availability|get_item:fixture.id == "yes" %}checked{% endif %}>
+                            {% if availability and availability.status == "yes" %}checked{% endif %}
+                            onchange="this.form.submit()">
                         Available
                     </label>
 
                     <label>
                         <input type="radio" name="status" value="no"
-                            {% if fixture_availability|get_item:fixture.id == "no" %}checked{% endif %}>
+                            {% if availability and availability.status == "no" %}checked{% endif %}
+                            onchange="this.form.submit()">
                         Unavailable
                     </label>
                 </div>
 
-                <button type="submit" name="set_availability" class="availability-btn">Set Availability</button>
+                {% if not availability %}
+                <button type="submit" name="set_availability" class="availability-btn">
+                    Set Availability
+                </button>
+                {% endif %}
             </form>
         </div>
+        {% endwith %}
         {% endfor %}
     </div>
 </div>

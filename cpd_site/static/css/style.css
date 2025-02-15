@@ -877,10 +877,48 @@ details ul li {
     color: white;
     font-weight: bold;
     font-size: 12px;
-    padding: 3px 6px;
+    padding: 3px 6px;.fixture-card
     border-radius: 5px;
     margin-right: 5px;
 }
+
+/*  Availability Fixture Card */
+.availability-section .fixture-card {
+    transition: background-color 0.3s ease-in-out, border 0.3s ease-in-out;
+}
+
+/* Green for Available */
+.availability-section .fixture-card.available-card {
+    background-color: #e6f9e6;
+    border: 2px solid #28a745;
+}
+
+/* Red for Unavailable */
+.availability-section .fixture-card.unavailable-card {
+    background-color: #f9e6e6;
+    border: 2px solid #dc3545;
+}
+
+/* Keep Button Highlighted After Selection */
+.availability-section .availability-btn.selected {
+    opacity: 0.8;
+    cursor: default;
+}
+
+/* Red Button for Unavailable Selection */
+.availability-section .fixture-card.unavailable-card .availability-btn.selected {
+    background-color: #dc3545 !important;
+    color: white;
+    cursor: not-allowed;
+}
+
+/* Availability Label Style */
+.availability-section .availability-options label {
+    font-weight: bold;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
 
 @media (max-width: 768px) {
     .homepage-grid {

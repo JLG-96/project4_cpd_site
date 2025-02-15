@@ -78,21 +78,19 @@ def player_dashboard(request):
     if request.user.profile.role != "player":
         return redirect("home")
 
-    # Fetch notifications for the logged-in player (not admin!)
+    # Fetch notifications for the logged-in player (not admin)
     notifications = Notification.objects.filter(
         recipient=request.user, is_read=False
     ).order_by("-created_at")
 
-    print("🔍 Player Notifications:", notifications)  # Debugging
-
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time")
+        match_completed=False
+    ).order_by("date", "time")
 
-    # Get ordered league table
+    # Get ordered league table and assign league positions
     league_table = Team.objects.all().order_by('-points', '-goals_for', 'goals_against')
 
-    # Assign league position dynamically
     for fixture in upcoming_fixtures:
         opponent_team = fixture.opponent
         if opponent_team:
@@ -103,37 +101,10 @@ def player_dashboard(request):
             except ValueError:
                 opponent_team.league_position = None  # If team isn't found in the league table
 
-    # Fetch latest messages from the manager (only last 5 messages)
+    # Fetch latest manager messages (only last 5 messages)
     manager_messages = ManagerMessage.objects.prefetch_related(
-        "comments").order_by("-created_at")[:5]
-    print("Retrieved Manager Messages:", manager_messages)  # Debugging line
-
-    # Handle comment submission
-    if request.method == "POST" and "submit_comment" in request.POST:
-        message_id = request.POST.get("message_id")
-        message = get_object_or_404(ManagerMessage, id=message_id)
-        comment_form = ManagerMessageCommentForm(request.POST)
-
-        if comment_form.is_valid():
-            comment = comment_form.save(commit=False)
-            comment.player = request.user
-            comment.message = message
-            comment.save()
-
-            # Notify the manager
-            create_notification(
-                recipient=message.manager,
-                type="comment",
-                message=f"{
-                    request.user.username} has commented on your message: {
-                        message.title}.",
-                link="/manager-dashboard/"
-            )
-
-            return redirect("player_dashboard")
-
-    else:
-        comment_form = ManagerMessageCommentForm()
+        "comments"
+    ).order_by("-created_at")[:5]
 
     # Handle player availability submission
     if request.method == "POST" and "set_availability" in request.POST:
@@ -147,31 +118,47 @@ def player_dashboard(request):
             defaults={"status": status}
         )
 
-        print(f"Availability Updated: {availability}, Created: {created}")  # Debugging
-
         # Notify the manager
         manager = User.objects.filter(profile__role="manager").first()
         if manager:
-            notification = Notification.objects.create(
+            Notification.objects.create(
                 recipient=manager,
                 type="availability",
-                message=f"{
-                    request.user.username} has updated availability for {
-                        fixture.opponent}.",
+                message=f"{request.user.username} has updated availability for {fixture.opponent}.",
                 link="/manager-dashboard/"
             )
-            print(f"Notification Created: {notification}")  # Debugging
 
         return redirect("player_dashboard")
 
+    # Handle comment submission on manager messages
+    if request.method == "POST" and "submit_comment" in request.POST:
+        message_id = request.POST.get("message_id")
+        message = get_object_or_404(ManagerMessage, id=message_id)
+        comment_form = ManagerMessageCommentForm(request.POST)
+
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.player = request.user
+            comment.message = message
+            comment.save()
+
+            # Notify the manager of the new comment
+            create_notification(
+                recipient=message.manager,
+                type="comment",
+                message=f"{request.user.username} has commented on your message: {message.title}.",
+                link="/manager-dashboard/"
+            )
+
+            return redirect("player_dashboard")
+    else:
+        comment_form = ManagerMessageCommentForm()
+
     # Fetch player availability correctly
     fixture_availability = {
-        fixture.id: {
-            "yes": PlayerAvailability.objects.filter(
-                fixture=fixture, status="yes").count(),
-            "no": PlayerAvailability.objects.filter(
-                fixture=fixture, status="no").count(),
-        }
+        fixture.id: PlayerAvailability.objects.filter(
+            player=request.user, fixture=fixture
+        ).first()
         for fixture in upcoming_fixtures
     }
 
@@ -182,6 +169,7 @@ def player_dashboard(request):
         "comment_form": comment_form,
         "notifications": notifications,
     })
+
 
 
 @login_required
