@@ -17,7 +17,7 @@ from django.utils.timezone import now
 
 
 def home(request):
-    """Fetches team details, upcoming fixture, and league standings."""
+    """Fetches team details, upcoming fixture, recent result, and league standings."""
 
     # Fetch the team
     team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
@@ -27,6 +27,11 @@ def home(request):
         match_completed=False,
         date__gte=now().date()  # Only include fixtures today or in the future
     ).order_by("date", "time").first()
+
+    # Fetch the most recent completed match
+    latest_result = Fixture.objects.filter(
+        match_completed=True
+    ).order_by("-date", "-time").first()
 
     # Fetch league standings
     league_table = Team.objects.all().order_by(
@@ -59,11 +64,13 @@ def home(request):
     # Fetch exactly the last 5 manager posts (newest first)
     manager_posts = ManagerPost.objects.order_by("-created_at")[:5]
 
-    print(f"✅ Manager Posts Retrieved: {len(manager_posts)}")
+    print(f"Manager Posts Retrieved: {len(manager_posts)}")
+    print(f"Latest Result: {latest_result}")  # Debugging output
 
     context = {
         "team": team,
         "upcoming_fixture": upcoming_fixture,
+        "latest_result": latest_result,  # Now passing latest result
         "league_preview": league_preview,
         "manager_posts": manager_posts,  # Pass all posts for cycling
     }
@@ -156,7 +163,7 @@ def player_dashboard(request):
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
         "notifications": notifications,
-        "manager_messages": manager_messages,  # ✅ Pass manager messages
+        "manager_messages": manager_messages,  # Pass manager messages
     })
 
 
@@ -210,13 +217,13 @@ def league_table(request):
 @login_required
 def edit_manager_post(request, post_id):
     """View to edit a specific manager's post."""
-    post = get_object_or_404(ManagerPost, id=post_id)  # ✅ Fetch correct post
+    post = get_object_or_404(ManagerPost, id=post_id)  # Fetch correct post
 
     if request.method == "POST":
         form = ManagerPostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
-            return redirect("home")  # ✅ Redirect back to homepage
+            return redirect("home")  # Redirect back to homepage
 
     else:
         form = ManagerPostForm(instance=post)

@@ -56,14 +56,23 @@
         {% endif %}
     </div>
 
-    <!-- Most Recent Result -->
+    <!-- Recent Result -->
     <div class="grid-item result-section">
-        <h2>Most Recent Result</h2>
+        <h2>Recent Result</h2>
         {% if latest_result %}
-            <div class="result-card">
-                <p><strong>{{ latest_result.opponent }}</strong></p>
+            <div class="result-card {% if latest_result.goals_for > latest_result.goals_against %}win-bg{% elif latest_result.goals_for == latest_result.goals_against %}draw-bg{% else %}defeat-bg{% endif %}">
+                <img src="{{ latest_result.opponent.logo.url }}" alt="{{ latest_result.opponent.name }} Logo">
+                <p><strong>{{ latest_result.opponent.name }}</strong></p>
                 <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
-                <p>Final Score: {{ latest_result.goals_for }} - {{ latest_result.goals_against }}</p>
+                <p class="score">Final Score: <strong>{{ latest_result.goals_for }} - {{ latest_result.goals_against }}</strong></p>
+
+                {% if latest_result.goals_for > latest_result.goals_against %}
+                    <p class="match-result win">WIN</p>
+                {% elif latest_result.goals_for == latest_result.goals_against %}
+                    <p class="match-result draw">DRAW</p>
+                {% else %}
+                    <p class="match-result defeat">DEFEAT</p>
+                {% endif %}
             </div>
         {% else %}
             <p class="no-result">No results available.</p>

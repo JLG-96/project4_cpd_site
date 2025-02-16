@@ -938,6 +938,58 @@ details ul li {
     background: #e68900;
 }
 
+/* Result homepage */
+
+/* Make the score stand out */
+.result-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    min-height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: fit-content; /* Ensures the card wraps around its content */
+    margin: auto;
+}
+
+
+/* Make the score more prominent */
+.result-card .score {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Match result tag styles */
+.match-result {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Keep only the result tag color */
+.match-result.win {
+    background-color: #4CAF50; /* Green for win */
+}
+
+.match-result.draw {
+    background-color: #bfbfbf; /* Grey for draw */
+}
+
+.match-result.defeat {
+    background-color: #ff4d4d; /* Red for defeat */
+
 
 @media (max-width: 768px) {
     .homepage-grid {
