@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 50px 0 0;
+    padding: 0;
     background-color: #f4f4f4;
 }
 
@@ -76,8 +76,17 @@ nav button:hover {
     width: 100%;
 }
 
+.banner-separator {
+    display: block;
+    height: 2px;  /* Reduce height */
+    width: 100%;
+    background-color: white;
+    border: none;
+    margin: 0;
+    position: relative;
+    z-index: 10; /* Ensure it doesn't interfere with other elements */
+}
 
-/* Banner Inner Layout */
 .banner-container {
     display: flex;
     align-items: center;
