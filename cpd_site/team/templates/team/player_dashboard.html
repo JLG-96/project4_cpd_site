@@ -145,9 +145,17 @@
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="fixture_id" value="{{ fixture.id }}">
-                    <button type="submit" name="reset_availability" class="change-availability-btn">
+                    <div class="availability-options">
+                        <label>
+                            <input type="radio" name="status" value="yes"> Available
+                        </label>
+                        <label>
+                            <input type="radio" name="status" value="no"> Unavailable
+                        </label>
+                    </div>
+                    <button type="submit" name="set_availability" class="availability-btn">
                         Change Availability
-                    </button>
+                    </button>                    
                 </form>
             {% else %}
                 <!-- Availability not set yet, show radio buttons -->

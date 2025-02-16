@@ -228,7 +228,8 @@ def edit_manager_post(request, post_id):
     else:
         form = ManagerPostForm(instance=post)
 
-    return render(request, "team/edit_manager_post.html", {"form": form, "post": post})
+    return render(request, "team/edit_manager_post.html", {
+        "form": form, "post": post})
 
 
 @login_required
@@ -264,10 +265,10 @@ def manager_dashboard(request):
             # Keep only the last 5 posts
             all_posts = ManagerPost.objects.order_by("-created_at")
             if all_posts.count() > 5:
-                for post in all_posts[5:]:  # Get all older posts beyond the latest 5
+                for post in all_posts[5:]:  # Get all older posts beyond 5
                     post.delete()  # Delete them
 
-            return redirect("manager_dashboard")  # Refresh page to reflect changes
+            return redirect("manager_dashboard")
 
     # Manager sends messages to players
     if request.method == "POST" and "send_message" in request.POST:
