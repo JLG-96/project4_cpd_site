@@ -70,7 +70,7 @@
                                 {% endfor %}
 
                                 <!-- Comment Form -->
-                                <form method="POST">
+                                <form method="POST" action="{% url 'add_comment' message.id %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="message_id" value="{{ message.id }}">
                                     {{ comment_form.content }}

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (home, 
+from .views import (home,
                     results_view,
                     fixtures_view,
                     league_table,
@@ -13,6 +13,7 @@ from .views import (home,
                     edit_manager_message,
                     delete_manager_message,
                     delete_manager_post,
+                    add_comment
                     )
 from django.contrib.auth.views import LogoutView
 
@@ -40,4 +41,5 @@ urlpatterns = [
           name="delete_manager_message"),
      path("delete-manager-post/<int:post_id>/", delete_manager_post,
           name="delete_manager_post"),
+     path("add-comment/<int:message_id>/", add_comment, name="add_comment"),
     ]

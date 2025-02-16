@@ -108,7 +108,7 @@ def player_dashboard(request):
         date__gte=now().date()  # Only include future fixtures
     ).order_by("date", "time")
 
-    # Get ordered league table
+    # Fetch league table
     league_table = Team.objects.all().order_by(
         '-points', '-goals_for', 'goals_against')
 
@@ -123,8 +123,20 @@ def player_dashboard(request):
             except ValueError:
                 opponent_team.league_position = None
 
-    # Fetch **latest** manager messages (ensure messages exist)
-    manager_messages = ManagerMessage.objects.all().order_by("-created_at")[:5]
+    # Fetch latest manager messages WITH comments
+    manager_messages = ManagerMessage.objects.prefetch_related("comments").order_by("-created_at")[:5]
+    # Handle comment submissions
+    if request.method == "POST" and "submit_comment" in request.POST:
+        message_id = request.POST.get("message_id")
+        message = get_object_or_404(ManagerMessage, id=message_id)
+
+        form = ManagerMessageCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.player = request.user
+            comment.message = message
+            comment.save()
+            return redirect("player_dashboard") 
 
     # Handle player availability submission
     if request.method == "POST" and "set_availability" in request.POST:
@@ -144,9 +156,7 @@ def player_dashboard(request):
             Notification.objects.create(
                 recipient=manager,
                 type="availability",
-                message=f"{
-                    request.user.username} has updated availability for {
-                        fixture.opponent}.",
+                message=f"{request.user.username} has updated availability for {fixture.opponent}.",
                 link="/manager-dashboard/"
             )
 
@@ -164,7 +174,8 @@ def player_dashboard(request):
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
         "notifications": notifications,
-        "manager_messages": manager_messages,  # Pass manager messages
+        "manager_messages": manager_messages,
+        "comment_form": ManagerMessageCommentForm(),
     })
 
 
@@ -338,6 +349,24 @@ def manager_dashboard(request):
         "notifications": notifications,
         "posts": posts,
     })
+
+
+@login_required
+def add_comment(request, message_id):
+    """Allows players to comment on manager messages."""
+    message = get_object_or_404(ManagerMessage, id=message_id)
+
+    if request.method == "POST":
+        form = ManagerMessageCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.player = request.user
+            comment.message = message
+            comment.save()
+            return redirect("player_dashboard")
+
+    return redirect("player_dashboard")
+
 
 
 @login_required
