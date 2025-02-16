@@ -353,7 +353,7 @@ def manager_dashboard(request):
 
 @login_required
 def add_comment(request, message_id):
-    """Allows players to comment on manager messages."""
+    """Allows players to comment on manager messages and notifies the manager."""
     message = get_object_or_404(ManagerMessage, id=message_id)
 
     if request.method == "POST":
@@ -363,9 +363,19 @@ def add_comment(request, message_id):
             comment.player = request.user
             comment.message = message
             comment.save()
+
+            # Notify the manager who sent the message
+            Notification.objects.create(
+                recipient=message.manager,
+                type="comment",
+                message=f"{request.user.username} commented on your message.",
+                link="/manager-dashboard/"
+            )
+
             return redirect("player_dashboard")
 
     return redirect("player_dashboard")
+
 
 
 

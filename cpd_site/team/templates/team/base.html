@@ -16,14 +16,26 @@
             <li><a href="{% url 'league_table' %}">League Table</a></li>
     
             {% if user.is_authenticated %}
-                <li>
-                    <a href="{% url 'player_dashboard' %}">
-                        Player Dashboard 
-                        {% if notifications.count > 0 %}
-                            <span class="notification-badge">{{ notifications.count }}</span>
-                        {% endif %}
-                    </a>
-                </li>
+                {% if user.profile.role == "manager" %}
+                    <li>
+                        <a href="{% url 'manager_dashboard' %}">
+                            Manager Dashboard
+                            {% if notifications.count > 0 %}
+                                <span class="notification-badge">{{ notifications.count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{% url 'player_dashboard' %}">
+                            Player Dashboard
+                            {% if notifications.count > 0 %}
+                                <span class="notification-badge">{{ notifications.count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endif %}
+                
                 <li>
                     <form action="{% url 'logout' %}" method="post" class="logout-form">
                         {% csrf_token %}
@@ -31,15 +43,14 @@
                     </form>
                 </li>
                 <li class="username-display">(<span>{{ user.username }}</span>)</li>
+
             {% else %}
                 <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}
+
         </ul>
     </nav>
-    
-    <!-- White line separator -->
-    <hr class="banner-separator">
-    
+
     <script>
         function toggleAvailability(id) {
             let element = document.getElementById(id);
