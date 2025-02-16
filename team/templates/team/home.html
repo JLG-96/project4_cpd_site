@@ -4,9 +4,10 @@
 {% block content %}
 <!-- Team Banner -->
 <section class="team-banner">
+    <!-- Hard-coded Wyddgrug logo in the static folder -->
     <img src="{% static 'team_logos/cpd_logo.jpg' %}" alt="CPD Yr Wyddgrug Logo" class="club-logo">
     <div class="banner-content">
-        <h1 class="team-title">CPD Yr Wyddgrug</h1>  <!-- Ensure class is here -->
+        <h1 class="team-title">CPD Yr Wyddgrug</h1>
         <div class="team-info">
             <span><strong>Manager:</strong> Joel Thomas</span>
             <span><strong>Home Ground:</strong> Gwernymynydd Village Center</span>
@@ -14,12 +15,6 @@
         </div>
     </div>
 </section>
-
-<!--  DEBUG  --> 
-<p>Logo field value: {{ fixture.opponent.logo }}
-    <img src="{{ latest_result.opponent.logo }}">
-</p> 
-
 
 <!-- Main Homepage Grid -->
 <section class="homepage-grid">
@@ -29,8 +24,10 @@
         <h2>Upcoming Fixture</h2>
         {% if upcoming_fixture %}
             <div class="fixture-card">
-                <img src="{{ upcoming_fixture.opponent.logo.url }}" alt="{{ upcoming_fixture.opponent }} Logo">
-                <p><strong>{{ upcoming_fixture.opponent }}</strong></p>
+                <!-- Static approach: we combine 'team_logos/' with the DB filename -->
+                <img src="{% static 'team_logos/' %}{{ upcoming_fixture.opponent.logo }}"
+                     alt="{{ upcoming_fixture.opponent.name }} Logo">
+                <p><strong>{{ upcoming_fixture.opponent.name }}</strong></p>
                 <p>{{ upcoming_fixture.date|date:"d/m/Y" }} at {{ upcoming_fixture.time }}</p>
                 <p>Location: {{ upcoming_fixture.location }}</p>
             </div>
@@ -44,8 +41,9 @@
         <h2>Recent Result</h2>
         {% if latest_result %}
             <div class="result-card">
-                <img src="{% static 'team_logos/' %}{{ latest_result.opponent.logo }}" 
-                     alt="{{ latest_result.opponent.name }} Logo">                
+                <!-- Static approach for the recent result logo -->
+                <img src="{% static 'team_logos/' %}{{ latest_result.opponent.logo }}"
+                     alt="{{ latest_result.opponent.name }} Logo">
                 <p><strong>{{ latest_result.opponent.name }}</strong></p>
                 <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
                 
@@ -68,7 +66,6 @@
             <p class="no-result">No results available.</p>
         {% endif %}
     </div>
-
 
     <!-- League Table Preview -->
     <div class="grid-item league-preview">
@@ -98,7 +95,8 @@
         <div id="manager-comment-container">
             {% if manager_posts %}
                 {% for post in manager_posts %}
-                    <div class="news-card post-item" id="post-{{ forloop.counter0 }}" {% if not forloop.first %}style="display:none;"{% endif %}>
+                    <div class="news-card post-item" id="post-{{ forloop.counter0 }}" 
+                         {% if not forloop.first %}style="display:none;"{% endif %}>
                         {% if forloop.first %}
                             <span class="news-tag">Latest</span>
                         {% endif %}
@@ -129,7 +127,7 @@
             const posts = document.querySelectorAll(".post-item");
             const totalPosts = posts.length;
     
-            console.log(`✅ Post cycling initialized: ${totalPosts} posts found.`);
+            console.log(`Post cycling initialized: ${totalPosts} posts found.`);
     
             function changePost(direction) {
                 if (totalPosts <= 1) {
@@ -164,5 +162,4 @@
     </script>    
 
 </section>
-
 {% endblock %}
