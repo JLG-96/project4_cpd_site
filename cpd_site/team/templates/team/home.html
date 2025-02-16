@@ -60,11 +60,17 @@
     <div class="grid-item result-section">
         <h2>Recent Result</h2>
         {% if latest_result %}
-            <div class="result-card {% if latest_result.goals_for > latest_result.goals_against %}win-bg{% elif latest_result.goals_for == latest_result.goals_against %}draw-bg{% else %}defeat-bg{% endif %}">
+            <div class="result-card">
                 <img src="{{ latest_result.opponent.logo.url }}" alt="{{ latest_result.opponent.name }} Logo">
                 <p><strong>{{ latest_result.opponent.name }}</strong></p>
                 <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
-                <p class="score">Final Score: <strong>{{ latest_result.goals_for }} - {{ latest_result.goals_against }}</strong></p>
+                
+                <!-- Score Cards -->
+                <div class="score-container">
+                    <span class="score-card">{{ latest_result.goals_for }}</span>
+                    <span>-</span>
+                    <span class="score-card">{{ latest_result.goals_against }}</span>
+                </div>
 
                 {% if latest_result.goals_for > latest_result.goals_against %}
                     <p class="match-result win">WIN</p>
@@ -78,6 +84,7 @@
             <p class="no-result">No results available.</p>
         {% endif %}
     </div>
+
 
     <!-- League Table Preview -->
     <div class="grid-item league-preview">

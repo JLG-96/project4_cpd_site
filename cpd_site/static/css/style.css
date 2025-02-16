@@ -963,8 +963,10 @@ details ul li {
 
 /* Make the score more prominent */
 .result-card .score {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
+    text-align: center;
+    display: block;
     margin: 10px 0;
 }
 
@@ -989,7 +991,28 @@ details ul li {
 
 .match-result.defeat {
     background-color: #ff4d4d; /* Red for defeat */
+}
 
+/* Score card styling */
+.score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between scores */
+    margin: 10px 0;
+}
+
+.score-card {
+    background-color: #f8f9fa; /* Light grey background */
+    color: #000; /* Black text */
+    font-size: 2.5rem; /* Bigger for emphasis */
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px; /* Rounded edges */
+    min-width: 60px;
+    text-align: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
 
 @media (max-width: 768px) {
     .homepage-grid {
