@@ -1147,4 +1147,20 @@ details ul li {
     .team-banner {
         display: none; /* Hide the entire banner section */
     }
+
+    /* Hide columns 4,5,6,7,8,9 */
+  .league-table th:nth-child(4),
+  .league-table td:nth-child(4),
+  .league-table th:nth-child(5),
+  .league-table td:nth-child(5),
+  .league-table th:nth-child(6),
+  .league-table td:nth-child(6),
+  .league-table th:nth-child(7),
+  .league-table td:nth-child(7),
+  .league-table th:nth-child(8),
+  .league-table td:nth-child(8),
+  .league-table th:nth-child(9),
+  .league-table td:nth-child(9) {
+    display: none;
+  }
 }
