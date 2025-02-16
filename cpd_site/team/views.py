@@ -14,6 +14,7 @@ from .forms import (ProfileForm,
                     ManagerMessageForm,
                     ManagerMessageCommentForm)
 from django.utils.timezone import now
+from django.utils import timezone
 
 
 def home(request):
@@ -380,8 +381,13 @@ def mark_notification_read(request, notification_id):
         notification.is_read = True
         notification.save()
 
+        # Debugging line
+        print(f"📩 Marking notification {notification_id} as read...")
+
         # Determine correct redirect
         next_page = request.POST.get("next")
+        print(f"🔄 Redirecting to: {next_page}")  # Debugging: See what next_page is
+
         if not next_page:
             if request.user.profile.role == "manager":
                 next_page = "manager_dashboard"
@@ -390,7 +396,7 @@ def mark_notification_read(request, notification_id):
 
         return redirect(next_page)
 
-    print(f"📩 Marking notification {notification_id} as read...")
+    return redirect("manager_dashboard")  # Fallback redirect
 
 
 @login_required
@@ -441,7 +447,4 @@ def delete_manager_post(request, post_id):
 
     post.delete()  # Delete the post
 
-    # Find the next most recent post and keep it if needed
-    latest_post = ManagerPost.objects.order_by("-created_at").first()
-
-    return redirect("manager_dashboard", latest_post=latest_post)
+    return redirect("manager_dashboard")

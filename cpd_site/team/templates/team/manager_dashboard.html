@@ -37,6 +37,9 @@
                 <ul class="notification-list">
                     {% for notification in notifications %}
                     <li class="{% if not notification.is_read %}new-notification{% endif %}">
+                        {% if forloop.first %} 
+                            <span class="new-tag">NEW</span> 
+                        {% endif %}
                         {{ notification.message }}
                         <form method="POST" action="{% url 'mark_notification_read' notification.id %}" style="display:inline;">
                             {% csrf_token %}

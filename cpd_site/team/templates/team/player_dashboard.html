@@ -74,7 +74,7 @@
                                 Show Comments ({{ message.comments.count }})
                             </button>
 
-                            <!-- Comments Section (Hidden by Default) -->
+                            <!-- Comments Section -->
                             <div id="comments-{{ message.id }}" class="comments-section" style="display: none;">
                                 {% for comment in message.comments.all %}
                                     <div class="comment">
