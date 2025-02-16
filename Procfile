@@ -1,1 +1,1 @@
-web: gunicorn cpd_site.wsgi
+web: python -m gunicorn cpd_site.wsgi
