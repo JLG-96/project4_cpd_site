@@ -31,9 +31,9 @@ LOGOUT_REDIRECT_URL = '/'
 SECRET_KEY = 'django-insecure-m0c)o$i8!_7swl3btnhg3u70syxu)@1es7x*5s+m0l0nusokq^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
