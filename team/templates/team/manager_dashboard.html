@@ -1,6 +1,6 @@
 {% extends "team/base.html" %}
 {% load custom_filters %}
-
+{% load static %}
 {% block content %}
 
 <div class="dashboard-container">
@@ -282,10 +282,14 @@
 <div class="fixtures-container">
     {% for fixture in upcoming_fixtures %}
         <div class="fixture-card">
+            {% load static %}
+
             {% if fixture.opponent.logo %}
-                <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
+                <img src="{% static 'team_logos/' %}{{ fixture.opponent.logo }}" 
+                    alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
             {% else %}
-                <img src="/static/default-logo.png" alt="Default Logo" class="fixture-logo">
+                <img src="{% static 'default-logo.png' %}" 
+                    alt="Default Logo" class="fixture-logo">
             {% endif %}
             <h3>{{ fixture.opponent.name }}</h3>
             

@@ -1,9 +1,10 @@
 {% extends "team/base.html" %}
+{% load static %}
 
 {% block content %}
 <!-- Team Banner -->
 <section class="team-banner">
-    <img src="{{ team.logo.url }}" alt="CPD Yr Wyddgrug Logo" class="club-logo">
+    <img src="{% static 'team_logos/cpd_logo.jpg' %}" alt="CPD Yr Wyddgrug Logo" class="club-logo">
     <div class="banner-content">
         <h1 class="team-title">CPD Yr Wyddgrug</h1>  <!-- Ensure class is here -->
         <div class="team-info">
@@ -13,6 +14,12 @@
         </div>
     </div>
 </section>
+
+<!--  DEBUG  --> 
+<p>Logo field value: {{ fixture.opponent.logo }}
+    <img src="{{ latest_result.opponent.logo }}">
+</p> 
+
 
 <!-- Main Homepage Grid -->
 <section class="homepage-grid">
@@ -37,7 +44,8 @@
         <h2>Recent Result</h2>
         {% if latest_result %}
             <div class="result-card">
-                <img src="{{ latest_result.opponent.logo.url }}" alt="{{ latest_result.opponent.name }} Logo">
+                <img src="{% static 'team_logos/' %}{{ latest_result.opponent.logo }}" 
+                     alt="{{ latest_result.opponent.name }} Logo">                
                 <p><strong>{{ latest_result.opponent.name }}</strong></p>
                 <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
                 

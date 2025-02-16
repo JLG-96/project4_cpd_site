@@ -1,6 +1,6 @@
 {% extends "team/base.html" %}
 {% load custom_filters %}
-
+{% load static %}
 {% block content %}
 
 <div class="dashboard-container">
@@ -98,8 +98,9 @@
             {% elif availability and availability.status == 'no' %} unavailable-card
             {% endif %}
         ">
-            <img src="{{ fixture.opponent.logo.url }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
-            <h3>{{ fixture.opponent.name }}</h3>
+        {% load static %}
+        <img src="{% static 'team_logos/' %}{{ fixture.opponent.logo }}" alt="{{ fixture.opponent.name }} Logo" class="fixture-logo">
+        <h3>{{ fixture.opponent.name }}</h3>
 
             {% if fixture.opponent.league_position %}
                 <p class="league-position">
