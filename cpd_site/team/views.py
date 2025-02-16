@@ -13,7 +13,7 @@ from .forms import (ProfileForm,
                     ManagerPost,
                     ManagerMessageForm,
                     ManagerMessageCommentForm)
-from django.utils import timezone
+from django.utils.timezone import now
 
 
 def home(request):
@@ -22,9 +22,10 @@ def home(request):
     # Fetch the team
     team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
 
-    # Fetch upcoming fixture
+    # Fetch upcoming fixture (Exclude past fixtures)
     upcoming_fixture = Fixture.objects.filter(
-        match_completed=False
+        match_completed=False,
+        date__gte=now().date()  # Only include fixtures today or in the future
     ).order_by("date", "time").first()
 
     # Fetch league standings
@@ -95,7 +96,9 @@ def player_dashboard(request):
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False).order_by("date", "time")
+        match_completed=False,
+        date__gte=now().date()  # Only include future fixtures
+    ).order_by("date", "time")
 
     # Get ordered league table
     league_table = Team.objects.all().order_by(
@@ -189,8 +192,10 @@ def results_view(request):
 
 def fixtures_view(request):
     """View to display only upcoming fixtures."""
-    upcoming_fixtures = Fixture.objects.filter(match_completed=False).order_by(
-        "date", "time")
+    upcoming_fixtures = Fixture.objects.filter(
+        match_completed=False,
+        date__gte=now().date()  # Only show future fixtures
+    ).order_by("date", "time")
     return render(request, "team/fixtures.html", {
         "upcoming_fixtures": upcoming_fixtures})
 
@@ -285,7 +290,8 @@ def manager_dashboard(request):
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
-        match_completed=False
+        match_completed=False,
+        date__gte=now().date()  # Exclude past fixtures
     ).order_by("date", "time")
 
     # Fetch ordered league table
