@@ -98,15 +98,14 @@
         <div id="manager-comment-container">
             {% if manager_posts %}
                 {% for post in manager_posts %}
-                    <div class="news-card" id="post-{{ forloop.counter0 }}" style="{% if not forloop.first %}display: none;{% endif %}">
+                    <div class="news-card post-item" id="post-{{ forloop.counter0 }}" {% if not forloop.first %}style="display:none;"{% endif %}>
                         {% if forloop.first %}
-                            <span id="news-tag-{{ forloop.counter0 }}" class="news-tag">Latest</span>
+                            <span class="news-tag">Latest</span>
                         {% endif %}
                         <h3 class="news-title">{{ post.title }}</h3>
                         <p class="news-content">{{ post.content }}</p>
                         <p class="news-date"><small>Posted on {{ post.created_at|date:"d/m/Y" }}</small></p>
-
-                        <!-- EDIT BUTTON: Visible only to the manager who posted it -->
+    
                         {% if request.user.is_authenticated and request.user == post.manager %}
                             <a href="{% url 'edit_manager_post' post.id %}" class="edit-button">Edit</a>
                         {% endif %}
@@ -116,42 +115,54 @@
                 <p>No recent comments from the manager.</p>
             {% endif %}
         </div>
-
+    
         <!-- Navigation Arrows -->
-        <button class="nav-button" onclick="changePost(-1)">&#9664;</button>
-        <button class="nav-button" onclick="changePost(1)">&#9654;</button>
+        <button class="nav-button prev-post">&#9664;</button>
+        <button class="nav-button next-post">&#9654;</button>
+
     </div>
 
     <!-- JavaScript for Cycling Posts -->
     <script>
-        let currentIndex = 0;
-        const posts = document.querySelectorAll(".news-card");
-
-        function changePost(direction) {
-            // Hide current post
-            posts[currentIndex].style.display = "none";
-
-            // Update index
-            currentIndex += direction;
-            if (currentIndex < 0) {
-                currentIndex = posts.length - 1;
-            } else if (currentIndex >= posts.length) {
-                currentIndex = 0;
-            }
-
-            // Show new post
-            posts[currentIndex].style.display = "block";
-
-            // Hide or show the "Latest" tag only for the newest post
-            document.querySelectorAll(".news-tag").forEach(tag => tag.style.display = "none");
-            if (currentIndex === 0) {
-                const latestTag = document.getElementById(`news-tag-${currentIndex}`);
-                if (latestTag) {
-                    latestTag.style.display = "inline-block";
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentIndex = 0;
+            const posts = document.querySelectorAll(".post-item");
+            const totalPosts = posts.length;
+    
+            console.log(`✅ Post cycling initialized: ${totalPosts} posts found.`);
+    
+            function changePost(direction) {
+                if (totalPosts <= 1) {
+                    console.warn("⚠️ Only 1 post found, no cycling available.");
+                    return;
                 }
+    
+                // Hide current post
+                posts[currentIndex].style.display = "none";
+    
+                // Update index
+                currentIndex += direction;
+                if (currentIndex < 0) {
+                    currentIndex = totalPosts - 1;
+                } else if (currentIndex >= totalPosts) {
+                    currentIndex = 0;
+                }
+    
+                // Show new post
+                posts[currentIndex].style.display = "block";
             }
-        }
-    </script>
+    
+            // Attach event listeners AFTER defining the function
+            document.querySelector(".prev-post").addEventListener("click", function () {
+                changePost(-1);
+            });
+    
+            document.querySelector(".next-post").addEventListener("click", function () {
+                changePost(1);
+            });
+        });
+    </script>    
+
 </section>
 
 {% endblock %}

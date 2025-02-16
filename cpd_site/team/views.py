@@ -13,6 +13,7 @@ from .forms import (ProfileForm,
                     ManagerPost,
                     ManagerMessageForm,
                     ManagerMessageCommentForm)
+from django.utils import timezone
 
 
 def home(request):
@@ -23,38 +24,47 @@ def home(request):
 
     # Fetch upcoming fixture
     upcoming_fixture = Fixture.objects.filter(
-        match_completed=False).order_by('date', 'time').first()
+        match_completed=False
+    ).order_by("date", "time").first()
 
     # Fetch league standings
     league_table = Team.objects.all().order_by(
-        '-points', '-goals_for', 'goals_against')
+        "-points", "-goals_for", "goals_against"
+    )
 
     # Find CPD's actual position in the league
-    cpd_team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
-    cpd_position = list(league_table).index(cpd_team) + 1 if cpd_team else None
+    cpd_team = next((t for t in league_table if t.name == "CPD Yr Wyddgrug"), None)
+    cpd_position = (
+        list(league_table).index(cpd_team) + 1 if cpd_team else None
+    )
 
     # Get top 3 teams
     top_teams = list(league_table[:3])
 
     # Ensure CPD is included at the correct position
-    league_preview = [{
-        "position": i + 1, "name": t.name, "points": t.points} for i,
-        t in enumerate(top_teams)]
+    league_preview = [
+        {"position": i + 1, "name": t.name, "points": t.points}
+        for i, t in enumerate(top_teams)
+    ]
     if cpd_team and cpd_team not in top_teams:
-        league_preview.append({
-            "position": cpd_position, "name": cpd_team.name,
-            "points": cpd_team.points})
+        league_preview.append(
+            {
+                "position": cpd_position,
+                "name": cpd_team.name,
+                "points": cpd_team.points,
+            }
+        )
 
-    # Fetch only the last 5 manager posts
+    # Fetch exactly the last 5 manager posts (newest first)
     manager_posts = ManagerPost.objects.order_by("-created_at")[:5]
 
-    print("Manager Posts Retrieved:", manager_posts)  # Debugging line
+    print(f"✅ Manager Posts Retrieved: {len(manager_posts)}")
 
     context = {
         "team": team,
         "upcoming_fixture": upcoming_fixture,
         "league_preview": league_preview,
-        "manager_posts": manager_posts,  # Pass multiple posts
+        "manager_posts": manager_posts,  # Pass all posts for cycling
     }
 
     return render(request, "team/home.html", context)
@@ -222,8 +232,6 @@ def manager_dashboard(request):
         is_read=False
     ).order_by("-created_at")
 
-    print("🔍 Manager Notifications:", notifications)  # Debugging
-
     # Ensure form variables are defined outside of the if-block
     post_form = ManagerPostForm()
     message_form = ManagerMessageForm()
@@ -233,13 +241,21 @@ def manager_dashboard(request):
         announcement_content = request.POST.get("announcement")
 
         if announcement_content:
-            # Delete the previous announcement before creating a new one
-            ManagerPost.objects.all().delete()
-
-            # Create a new announcement
+            # Create a new post
             ManagerPost.objects.create(
-                manager=request.user, content=announcement_content
+                manager=request.user,
+                title="Manager's Comments",
+                content=announcement_content,
+                created_at=timezone.now()
             )
+
+            # Keep only the last 5 posts
+            all_posts = ManagerPost.objects.order_by("-created_at")
+            if all_posts.count() > 5:
+                for post in all_posts[5:]:  # Get all older posts beyond the latest 5
+                    post.delete()  # Delete them
+
+            return redirect("manager_dashboard")  # Refresh page to reflect changes
 
     # Manager sends messages to players
     if request.method == "POST" and "send_message" in request.POST:
@@ -248,8 +264,7 @@ def manager_dashboard(request):
             message = message_form.save(commit=False)
             message.manager = request.user
             message.save()
-            print("📨 Manager Message Sent:", message)  # Debugging
-
+            
             # Notify all players
             players = User.objects.filter(profile__role="player")
             for player in players:
@@ -296,7 +311,7 @@ def manager_dashboard(request):
         for fixture in upcoming_fixtures
     }
 
-    posts = ManagerPost.objects.all().order_by("-created_at")
+    posts = ManagerPost.objects.exclude(id=None).order_by("-created_at")
     return render(request, "team/manager_dashboard.html", {
         "post_form": post_form,
         "message_form": message_form,
@@ -305,6 +320,7 @@ def manager_dashboard(request):
         "upcoming_fixtures": upcoming_fixtures,
         "fixture_availability": fixture_availability,
         "notifications": notifications,
+        "posts": posts,
     })
 
 
@@ -389,10 +405,6 @@ def delete_manager_message(request, message_id):
     """Allows the manager to delete a message sent to players."""
     message = get_object_or_404(ManagerMessage, id=message_id)
 
-    # Debugging: Print the current user and role
-    print(f"🗑 Attempting to delete message: {message.title}")
-    print(f"👤 Current User: {request.user.username}, Role: {request.user.profile.role}")
-
     # Ensure only the manager who created the message can delete it
     if request.user.profile.role != "manager":
         print("Unauthorized deletion attempt!")
@@ -405,12 +417,16 @@ def delete_manager_message(request, message_id):
 
 @login_required
 def delete_manager_post(request, post_id):
-    """Deletes the latest manager announcement."""
-    if request.user.profile.role != "manager":
-        return redirect("home")
-
-    # Get the post by ID and delete it
+    """Delete an announcement, replacing it with the previous one if available."""
     post = get_object_or_404(ManagerPost, id=post_id)
-    post.delete()
 
-    return redirect("manager_dashboard")
+    # Only the manager who posted it can delete it
+    if request.user != post.manager:
+        return redirect("manager_dashboard")
+
+    post.delete()  # Delete the post
+
+    # Find the next most recent post and keep it if needed
+    latest_post = ManagerPost.objects.order_by("-created_at").first()
+
+    return redirect("manager_dashboard", latest_post=latest_post)
