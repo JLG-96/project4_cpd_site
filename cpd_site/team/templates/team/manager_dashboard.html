@@ -103,7 +103,6 @@
                     <button type="submit" name="send_message" class="send-message-btn">Send</button>
                 </form>
             </div>
-
             <!-- Messages List -->
             <div class="message-list">
                 <h2 class="section-title">Sent Messages</h2>
@@ -111,13 +110,29 @@
                 {% if sent_messages %}
                     {% for message in sent_messages %}
                         <div class="message-box">
+                            <!-- Click to toggle the message -->
                             <h3 class="message-title" onclick="toggleMessage('{{ message.id }}')">
                                 {{ message.title }}
                             </h3>
 
-                            <div id="message-{{ message.id }}" class="message-content">
+                            <!-- Message Content (Initially Hidden) -->
+                            <div id="message-{{ message.id }}" class="message-content" style="display: none;">
                                 <p>{{ message.content }}</p>
                                 <p><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
+
+                                <!-- Comments Section -->
+                                <button class="toggle-comments-btn" onclick="toggleComments('{{ message.id }}')">
+                                    Show Comments
+                                </button>
+                                <div id="comments-{{ message.id }}" class="comments" style="display: none;">
+                                    {% for comment in message.comments.all %}
+                                        <div class="comment">
+                                            <p><strong>{{ comment.player.username }}</strong>: {{ comment.content }}</p>
+                                        </div>
+                                    {% empty %}
+                                        <p>No comments yet.</p>
+                                    {% endfor %}
+                                </div>
 
                                 <!-- Edit & Delete Buttons -->
                                 <div class="message-actions">
@@ -145,14 +160,21 @@
     function toggleMessage(id) {
         let content = document.getElementById(`message-${id}`);
         if (content) {
-            content.style.display = (content.style.display === "none" || content.style.display === "") ? "block" : "none";
+            content.style.display = content.style.display === "none" ? "block" : "none";
         }
     }
 
     function toggleComments(id) {
         let comments = document.getElementById(`comments-${id}`);
+        let toggleButton = document.querySelector(`#comments-${id}`).previousElementSibling;
         if (comments) {
-            comments.style.display = (comments.style.display === "none" || comments.style.display === "") ? "block" : "none";
+            if (comments.style.display === "none" || comments.style.display === "") {
+                comments.style.display = "block";
+                toggleButton.innerHTML = "Hide Comments ▲";
+            } else {
+                comments.style.display = "none";
+                toggleButton.innerHTML = "Show Comments ▼";
+            }
         }
     }
 </script>
@@ -209,30 +231,68 @@
     }
 
     .toggle-comments-btn {
-        background: none;
-        border: none;
-        color: blue;
-        cursor: pointer;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    }
+
+    .toggle-comments-btn:hover {
         text-decoration: underline;
+        color: #0056b3;
+    }
+
+    /* Styling the dropdown arrow */
+    .toggle-comments-btn::after {
+        font-size: 12px;
+        transition: transform 0.3s ease;
+    }
+
+    /* Rotate arrow when active */
+    .toggle-comments-btn.active::after {
+        transform: rotate(180deg);
+    }
+
+    /* Spacing for action buttons */
+    .message-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+    }
+
+    /* Edit and Delete Button Styling */
+    .btn-edit, .btn-delete {
+        padding: 6px 12px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
     }
 
     .btn-edit {
         background-color: #007bff;
         color: white;
-        padding: 5px 10px;
-        text-decoration: none;
-        border-radius: 5px;
-        margin-right: 5px;
     }
 
     .btn-delete {
-        background-color: red;
+        background-color: #dc3545;
         color: white;
-        padding: 5px 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
     }
+
+    .btn-edit:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-delete:hover {
+        background-color: #a71d2a;
+    }
+
 </style>
 
 <!-- Upcoming Fixtures Section -->

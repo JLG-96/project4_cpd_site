@@ -277,7 +277,7 @@ def manager_dashboard(request):
             message = message_form.save(commit=False)
             message.manager = request.user
             message.save()
-            
+
             # Notify all players
             players = User.objects.filter(profile__role="player")
             for player in players:
@@ -294,7 +294,8 @@ def manager_dashboard(request):
     latest_post = ManagerPost.objects.all().order_by("-created_at").first()
 
     # Fetch sent messages
-    sent_messages = ManagerMessage.objects.all().order_by("-created_at")
+    sent_messages = ManagerMessage.objects.prefetch_related(
+        "comments").order_by("-created_at")
 
     # Fetch upcoming fixtures
     upcoming_fixtures = Fixture.objects.filter(
