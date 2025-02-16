@@ -8,6 +8,34 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body class="{% if request.path == '/' %}homepage{% endif %}">
+    <nav class="standard-nav">
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
+            <li><a href="{% url 'results' %}">Results</a></li>
+            <li><a href="{% url 'league_table' %}">League Table</a></li>
+            
+            {% if user.is_authenticated %}
+                <li>
+                    <a href="{% url 'player_dashboard' %}">
+                        Player Dashboard 
+                        {% if notifications.count > 0 %}
+                            <span class="notification-badge">{{ notifications.count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <form action="{% url 'logout' %}" method="post" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit">Logout</button>
+                    </form>
+                </li>
+                <li class="username-display">(<span>Signed in as {{ user.username }}</span>)</li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    
     <script>
         function toggleAvailability(id) {
             let element = document.getElementById(id);

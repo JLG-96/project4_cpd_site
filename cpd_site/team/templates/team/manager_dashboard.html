@@ -2,28 +2,6 @@
 {% load custom_filters %}
 
 {% block content %}
-<nav class="standard-nav">
-    <ul>
-        <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
-        <li><a href="{% url 'results' %}">Results</a></li>
-        <li><a href="{% url 'league_table' %}">League Table</a></li>
-        <li>
-            <a href="{% url 'manager_dashboard' %}">
-                Manager Dashboard 
-                {% if notifications.count > 0 %}
-                    <span class="notification-badge">{{ notifications.count }}</span>
-                {% endif %}
-            </a>
-        </li>
-        <li>
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
-        </li>
-    </ul>
-</nav>
 
 <div class="dashboard-container">
     <h1>Manager Dashboard</h1>

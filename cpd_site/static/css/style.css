@@ -1014,6 +1014,51 @@ details ul li {
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+.username-display {
+    color: #ccc;  /* Light grey for subtle effect */
+    font-size: 0.9rem;
+    margin-left: 10px;
+    padding: 8px;
+}
+
+.logout-form {
+    display: inline;
+}
+
+.navbar ul {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.standard-nav ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.standard-nav li {
+    margin-right: 15px;
+}
+
+.logout-form button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.username-display {
+    font-size: 1rem;
+    color: #ccc;
+    margin-left: 5px;
+    font-weight: normal;
+}
+
+
 @media (max-width: 768px) {
     .homepage-grid {
         grid-template-columns: 1fr;
