@@ -7,64 +7,55 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="{% if request.path == '/' %}homepage{% endif %}">
+<body>
+    <!-- Navigation -->
     <nav class="standard-nav">
-        <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
-            <li><a href="{% url 'results' %}">Results</a></li>
-            <li><a href="{% url 'league_table' %}">League Table</a></li>
-    
-            {% if user.is_authenticated %}
-                {% if user.profile.role == "manager" %}
-                    <li>
-                        <a href="{% url 'manager_dashboard' %}">
-                            Manager Dashboard
-                            {% if notifications.count > 0 %}
-                                <span class="notification-badge">{{ notifications.count }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                {% else %}
-                    <li>
-                        <a href="{% url 'player_dashboard' %}">
-                            Player Dashboard
-                            {% if notifications.count > 0 %}
-                                <span class="notification-badge">{{ notifications.count }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                {% endif %}
+        <div class="nav-container">
+            <!-- Hamburger Icon (only shows on smaller screens) -->
+            <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
+            
+            <!-- Nav Links (horizontal on bigger screens, hidden on small) -->
+            <ul class="nav-links" id="mainNav">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
+                <li><a href="{% url 'results' %}">Results</a></li>
+                <li><a href="{% url 'league_table' %}">League Table</a></li>
                 
-                <li>
-                    <form action="{% url 'logout' %}" method="post" class="logout-form">
-                        {% csrf_token %}
-                        <button type="submit">Logout</button>
-                    </form>
-                </li>
-                <li class="username-display">(<span>{{ user.username }}</span>)</li>
-
-            {% else %}
-                <li><a href="{% url 'login' %}">Login</a></li>
-            {% endif %}
-
-        </ul>
+                {% if user.is_authenticated %}
+                    {% if user.profile.role == "manager" %}
+                        <li><a href="{% url 'manager_dashboard' %}">Manager Dashboard</a></li>
+                    {% else %}
+                        <li><a href="{% url 'player_dashboard' %}">Player Dashboard</a></li>
+                    {% endif %}
+                    <li>
+                        <form action="{% url 'logout' %}" method="post" class="logout-form">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    </li>
+                    <li>(Signed in as: {{ user.username }})</li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
     </nav>
-
+    
     <script>
-        function toggleAvailability(id) {
-            let element = document.getElementById(id);
-            if (element.style.display === "none" || element.style.display === "") {
-                element.style.display = "block";
-            } else {
-                element.style.display = "none";
-            }
+    function toggleMenu() {
+        console.log("Hamburger clicked!");
+        const nav = document.getElementById("mainNav");
+        if (!nav) {
+            console.log("No element with id='mainNav'");
+        } else {
+            nav.classList.toggle("show");
+            console.log("Toggled .show on nav-links. Current class:", nav.className);
         }
-        </script>
+    }
+    </script>
 
     {% block content %}
-    <!-- Page-specific content will be inserted here -->
+    <!-- Page-specific content -->
     {% endblock %}
-
 </body>
 </html>
