@@ -14,7 +14,7 @@
             <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
             <li><a href="{% url 'results' %}">Results</a></li>
             <li><a href="{% url 'league_table' %}">League Table</a></li>
-            
+    
             {% if user.is_authenticated %}
                 <li>
                     <a href="{% url 'player_dashboard' %}">
@@ -30,11 +30,15 @@
                         <button type="submit">Logout</button>
                     </form>
                 </li>
-                <li class="username-display">(<span>Signed in as {{ user.username }}</span>)</li>
+                <li class="username-display">(<span>{{ user.username }}</span>)</li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
     
+    <!-- White line separator -->
+    <hr class="banner-separator">
     
     <script>
         function toggleAvailability(id) {
