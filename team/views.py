@@ -179,27 +179,6 @@ def player_dashboard(request):
     })
 
 
-@login_required
-def create_profile(request):
-    """Allows users to create a profile if they don't have one."""
-    if Profile.objects.filter(user=request.user).exists():
-        return redirect("home")
-
-    if request.method == "POST":
-        form = ProfileForm(request.POST)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = request.user
-            profile.save()
-            return redirect(
-                "manager_dashboard" if profile.role ==
-                "manager" else "player_dashboard")
-    else:
-        form = ProfileForm()
-
-    return render(request, "team/create_profile.html", {"form": form})
-
-
 def results_view(request):
     """View for displaying past match results"""
     past_fixtures = Fixture.objects.filter(match_completed=True).order_by(
