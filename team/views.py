@@ -3,13 +3,11 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import (Team,
                      Fixture,
-                     Profile,
                      PlayerAvailability,
                      ManagerMessage,
                      ManagerMessageComment,
                      Notification)
-from .forms import (ProfileForm,
-                    ManagerPostForm,
+from .forms import (ManagerPostForm,
                     ManagerPost,
                     ManagerMessageForm,
                     ManagerMessageCommentForm)
@@ -18,7 +16,7 @@ from django.utils import timezone
 
 
 def home(request):
-    """Fetches team details, upcoming fixture, recent result, and league standings."""
+    """Fetches team details, upcoming fixture, recent result, and league."""
 
     # Fetch the team
     team = Team.objects.filter(name="CPD Yr Wyddgrug").first()
@@ -40,7 +38,8 @@ def home(request):
     )
 
     # Find CPD's actual position in the league
-    cpd_team = next((t for t in league_table if t.name == "CPD Yr Wyddgrug"), None)
+    cpd_team = next((
+        t for t in league_table if t.name == "CPD Yr Wyddgrug"), None)
     cpd_position = (
         list(league_table).index(cpd_team) + 1 if cpd_team else None
     )
@@ -64,9 +63,6 @@ def home(request):
 
     # Fetch exactly the last 5 manager posts (newest first)
     manager_posts = ManagerPost.objects.order_by("-created_at")[:5]
-
-    print(f"Manager Posts Retrieved: {len(manager_posts)}")
-    print(f"Latest Result: {latest_result}")  # Debugging output
 
     context = {
         "team": team,
@@ -124,7 +120,8 @@ def player_dashboard(request):
                 opponent_team.league_position = None
 
     # Fetch latest manager messages WITH comments
-    manager_messages = ManagerMessage.objects.prefetch_related("comments").order_by("-created_at")[:5]
+    manager_messages = ManagerMessage.objects.prefetch_related(
+        "comments").order_by("-created_at")[:5]
     # Handle comment submissions
     if request.method == "POST" and "submit_comment" in request.POST:
         message_id = request.POST.get("message_id")
@@ -136,7 +133,7 @@ def player_dashboard(request):
             comment.player = request.user
             comment.message = message
             comment.save()
-            return redirect("player_dashboard") 
+            return redirect("player_dashboard")
 
     # Handle player availability submission
     if request.method == "POST" and "set_availability" in request.POST:
@@ -156,7 +153,9 @@ def player_dashboard(request):
             Notification.objects.create(
                 recipient=manager,
                 type="availability",
-                message=f"{request.user.username} has updated availability for {fixture.opponent}.",
+                message=f"{
+                    request.user.username} has updated availability for {
+                        fixture.opponent}.",
                 link="/manager-dashboard/"
             )
 
@@ -308,7 +307,8 @@ def manager_dashboard(request):
         opponent_team = fixture.opponent
         if opponent_team:
             opponent_team.league_position = next(
-                (team.league_position for team in league_table if team.id == opponent_team.id), 
+                (team.league_position for team in league_table if team.id ==
+                    opponent_team.id),
                 None
             )
 
@@ -332,7 +332,7 @@ def manager_dashboard(request):
 
 @login_required
 def add_comment(request, message_id):
-    """Allows players to comment on manager messages and notifies the manager."""
+    """Allows players to comment to message and notifies the manager."""
     message = get_object_or_404(ManagerMessage, id=message_id)
 
     if request.method == "POST":
@@ -354,8 +354,6 @@ def add_comment(request, message_id):
             return redirect("player_dashboard")
 
     return redirect("player_dashboard")
-
-
 
 
 @login_required
@@ -399,12 +397,8 @@ def mark_notification_read(request, notification_id):
         notification.is_read = True
         notification.save()
 
-        # Debugging line
-        print(f"📩 Marking notification {notification_id} as read...")
-
         # Determine correct redirect
         next_page = request.POST.get("next")
-        print(f"🔄 Redirecting to: {next_page}")  # Debugging: See what next_page is
 
         if not next_page:
             if request.user.profile.role == "manager":
@@ -446,17 +440,15 @@ def delete_manager_message(request, message_id):
 
     # Ensure only the manager who created the message can delete it
     if request.user.profile.role != "manager":
-        print("Unauthorized deletion attempt!")
         return redirect("manager_dashboard")
 
     message.delete()
-    print("Message deleted successfully!")
     return redirect("manager_dashboard")
 
 
 @login_required
 def delete_manager_post(request, post_id):
-    """Delete an announcement, replacing it with the previous one if available."""
+    """Delete an announcement replacing it with the previous one."""
     post = get_object_or_404(ManagerPost, id=post_id)
 
     # Only the manager who posted it can delete it

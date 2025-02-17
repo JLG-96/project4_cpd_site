@@ -84,20 +84,21 @@ class Fixture(models.Model):
         super().save(*args, **kwargs)  # Save fixture first
 
         if is_new:
-            from .models import Notification, Profile  # Import inside to avoid circular imports
+            from .models import Notification
             players = User.objects.filter(profile__role="player")
             for player in players:
                 Notification.objects.create(
                     recipient=player,
                     type="fixture",
-                    message=f"A new fixture has been scheduled against {self.opponent.name}.",
+                    message=f"A new fixture has been scheduled against {
+                                self.opponent.name}.",
                     link="/fixtures/"
                 )
 
     def __str__(self):
         opponent_name = self.opponent.name if self.opponent else "Unknown Team"
-        return f"{opponent_name} - {self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
-
+        return f"{opponent_name} - {
+            self.date} ({'Home' if self.home_or_away == 'H' else 'Away'})"
 
 
 class Profile(models.Model):
