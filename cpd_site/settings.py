@@ -32,7 +32,7 @@ LOGOUT_REDIRECT_URL = '/'
 SECRET_KEY = config('SECRET_KEY', default='KnymOdiNz6')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1']
 
