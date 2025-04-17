@@ -21,8 +21,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-
+                <ul class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0 d-flex gap-2">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
@@ -35,7 +34,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'league_table' %}">League Table</a>
                     </li>
-
+                
                     {% if user.is_authenticated %}
                         {% if user.profile.role == "manager" %}
                             <li class="nav-item">
@@ -46,15 +45,15 @@
                                 <a class="nav-link" href="{% url 'player_dashboard' %}">Player Dashboard</a>
                             </li>
                         {% endif %}
-
+                
                         <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            <form action="{% url 'logout' %}" method="post" class="m-0 p-0" style="background: none; border: none;">
                                 {% csrf_token %}
-                                <button class="btn btn-outline-light btn-sm ms-2" type="submit">Logout</button>
+                                <button type="submit" class="nav-link btn btn-link text-light p-0" style="box-shadow: none;">Logout</button>
                             </form>
                         </li>
                         <li class="nav-item">
-                            <span class="navbar-text ms-3">Signed in as: <strong>{{ user.username }}</strong></span>
+                            <span class="navbar-text">Signed in as: <strong>{{ user.username }}</strong></span>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -64,8 +63,7 @@
                             <a class="nav-link" href="{% url 'register' %}">Register</a>
                         </li>
                     {% endif %}
-
-                </ul>
+                </ul>                
             </div>
         </div>
     </nav>

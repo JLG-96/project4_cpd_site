@@ -1045,13 +1045,13 @@ ul.errorlist {
 }
 
 /* Style the form container for better readability and spacing */
-form {
+form:not(.d-inline) {
     max-width: 500px;
     margin: 0 auto;
     padding: 20px;
     background-color: #f5f5f5;
     border-radius: 8px;
-}
+  }
 
 /* Style all input, select, and textarea fields inside the form */
 form input, form select, form textarea {
