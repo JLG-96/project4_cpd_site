@@ -61,6 +61,7 @@ class ManagerMessageCommentForm(forms.ModelForm):
                 "rows": 2, "placeholder": "Write a comment..."}),
         }
 
+
 class CustomUserRegistrationForm(UserCreationForm):
     """
     Custom user registration form with role selection
@@ -79,7 +80,7 @@ class CustomUserRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("username", "password1", "password2", "role", "invite_code")
+        fields = ("username", "password1", "password2")
 
     def clean_invite_code(self):
         code = self.cleaned_data["invite_code"]
