@@ -6,57 +6,78 @@
     <title>CPD Yr Wyddgrug</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
 </head>
 <body>
+
     <!-- Navigation -->
-    <nav class="standard-nav">
-        <div class="nav-container">
-            <!-- Hamburger Icon (only shows on smaller screens) -->
-            <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
-            
-            <!-- Nav Links (horizontal on bigger screens, hidden on small) -->
-            <ul class="nav-links" id="mainNav">
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'fixtures' %}">Fixtures</a></li>
-                <li><a href="{% url 'results' %}">Results</a></li>
-                <li><a href="{% url 'league_table' %}">League Table</a></li>
-                
-                {% if user.is_authenticated %}
-                    {% if user.profile.role == "manager" %}
-                        <li><a href="{% url 'manager_dashboard' %}">Manager Dashboard</a></li>
-                    {% else %}
-                        <li><a href="{% url 'player_dashboard' %}">Player Dashboard</a></li>
-                    {% endif %}
-                    <li>
-                        <form action="{% url 'logout' %}" method="post" class="logout-form">
-                            {% csrf_token %}
-                            <button type="submit">Logout</button>
-                        </form>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">CPD Yr Wyddgrug</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
-                    <li>(Signed in as: {{ user.username }})</li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                    <li><a href="{% url 'register' %}">Register</a></li>
-                {% endif %}
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'fixtures' %}">Fixtures</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'results' %}">Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'league_table' %}">League Table</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        {% if user.profile.role == "manager" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'manager_dashboard' %}">Manager Dashboard</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'player_dashboard' %}">Player Dashboard</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-light btn-sm ms-2" type="submit">Logout</button>
+                            </form>
+                        </li>
+                        <li class="nav-item">
+                            <span class="navbar-text ms-3">Signed in as: <strong>{{ user.username }}</strong></span>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
         </div>
     </nav>
-    
-    <script>
-    function toggleMenu() {
-        console.log("Hamburger clicked!");
-        const nav = document.getElementById("mainNav");
-        if (!nav) {
-            console.log("No element with id='mainNav'");
-        } else {
-            nav.classList.toggle("show");
-            console.log("Toggled .show on nav-links. Current class:", nav.className);
-        }
-    }
-    </script>
 
-    {% block content %}
-    <!-- Page-specific content -->
-    {% endblock %}
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+
 </body>
 </html>

@@ -4,7 +4,6 @@
 {% block content %}
 <!-- Team Banner -->
 <section class="team-banner">
-    <!-- Hard-coded Wyddgrug logo in the static folder -->
     <img src="{% static 'team_logos/cpd_logo.jpg' %}" alt="CPD Yr Wyddgrug Logo" class="club-logo">
     <div class="banner-content">
         <h1 class="team-title">CPD Yr Wyddgrug</h1>
@@ -16,150 +15,158 @@
     </div>
 </section>
 
-<!-- Main Homepage Grid -->
-<section class="homepage-grid">
-    
-    <!-- Upcoming Fixture -->
-    <div class="grid-item fixture-section">
-        <h2>Upcoming Fixture</h2>
-        {% if upcoming_fixture %}
-            <div class="fixture-card">
-                <!-- Static approach: we combine 'team_logos/' with the DB filename -->
-                <img src="{% static 'team_logos/' %}{{ upcoming_fixture.opponent.logo }}"
-                     alt="{{ upcoming_fixture.opponent.name }} Logo">
-                <p><strong>{{ upcoming_fixture.opponent.name }}</strong></p>
-                <p>{{ upcoming_fixture.date|date:"d/m/Y" }} at {{ upcoming_fixture.time }}</p>
-                <p>Location: {{ upcoming_fixture.location }}</p>
-            </div>
-        {% else %}
-            <p class="no-fixture">No upcoming fixtures.</p>
-        {% endif %}
-    </div>
-
-    <!-- Recent Result -->
-    <div class="grid-item result-section">
-        <h2>Recent Result</h2>
-        {% if latest_result %}
-            <div class="result-card">
-                <!-- Static approach for the recent result logo -->
-                <img src="{% static 'team_logos/' %}{{ latest_result.opponent.logo }}"
-                     alt="{{ latest_result.opponent.name }} Logo">
-                <p><strong>{{ latest_result.opponent.name }}</strong></p>
-                <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
-                
-                <!-- Score Cards -->
-                <div class="score-container">
-                    <span class="score-card">{{ latest_result.goals_for }}</span>
-                    <span>-</span>
-                    <span class="score-card">{{ latest_result.goals_against }}</span>
-                </div>
-
-                {% if latest_result.goals_for > latest_result.goals_against %}
-                    <p class="match-result win">WIN</p>
-                {% elif latest_result.goals_for == latest_result.goals_against %}
-                    <p class="match-result draw">DRAW</p>
+<!-- Main Homepage Layout with Bootstrap -->
+<div class="container mt-4">
+    <!-- Upcoming Fixture & Recent Result -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+            <div class="grid-item fixture-section">
+                <h2>Upcoming Fixture</h2>
+                {% if upcoming_fixture %}
+                    <div class="fixture-card h-100 d-flex flex-column justify-content-between">
+                        <img src="{% static 'team_logos/' %}{{ upcoming_fixture.opponent.logo }}"
+                            alt="{{ upcoming_fixture.opponent.name }} Logo">
+                        <p><strong>{{ upcoming_fixture.opponent.name }}</strong></p>
+                        <p>{{ upcoming_fixture.date|date:"d/m/Y" }} at {{ upcoming_fixture.time }}</p>
+                        <p>Location: {{ upcoming_fixture.location }}</p>
+                    </div>
                 {% else %}
-                    <p class="match-result defeat">DEFEAT</p>
+                    <p class="no-fixture">No upcoming fixtures.</p>
                 {% endif %}
             </div>
-        {% else %}
-            <p class="no-result">No results available.</p>
-        {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <div class="grid-item result-section">
+                <h2>Recent Result</h2>
+                {% if latest_result %}
+                    <div class="result-card h-100 d-flex flex-column justify-content-between">
+                        <img src="{% static 'team_logos/' %}{{ latest_result.opponent.logo }}"
+                            alt="{{ latest_result.opponent.name }} Logo">
+                        <p><strong>{{ latest_result.opponent.name }}</strong></p>
+                        <p>{{ latest_result.date|date:"d/m/Y" }} at {{ latest_result.time }}</p>
+
+                        <div class="score-container">
+                            <span class="score-card">{{ latest_result.goals_for }}</span>
+                            <span>-</span>
+                            <span class="score-card">{{ latest_result.goals_against }}</span>
+                        </div>
+
+                        {% if latest_result.goals_for > latest_result.goals_against %}
+                            <p class="match-result win">WIN</p>
+                        {% elif latest_result.goals_for == latest_result.goals_against %}
+                            <p class="match-result draw">DRAW</p>
+                        {% else %}
+                            <p class="match-result defeat">DEFEAT</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="no-result">No results available.</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <!-- League Table Preview -->
-    <div class="grid-item league-preview">
-        <h2>League Table Preview</h2>
-        <table>
-            <thead>
+<div class="container">
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-10">
+        <div class="grid-item league-preview">
+          <h2>League Table Preview</h2>
+          <!-- Responsive scroll container -->
+          <div class="table-responsive">
+            <table class="league-table">
+              <thead>
                 <tr>
-                    <th>Pos</th>
-                    <th>Team</th>
-                    <th>Pts</th>
+                  <th>Pos</th>
+                  <th>Team</th>
+                  <th>Pts</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 {% for team in league_preview %}
-                    <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
-                        <td>{{ team.position }}</td>
-                        <td>{{ team.name }}</td>
-                        <td>{{ team.points }}</td>
-                    </tr>
+                <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
+                  <td>{{ team.position }}</td>
+                  <td>{{ team.name }}</td>
+                  <td>{{ team.points }}</td>
+                </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Manager's Comments (News Style) -->
-    <div class="grid-item manager-comments">
-        <div id="manager-comment-container">
-            {% if manager_posts %}
-                {% for post in manager_posts %}
-                    <div class="news-card post-item" id="post-{{ forloop.counter0 }}" 
-                         {% if not forloop.first %}style="display:none;"{% endif %}>
-                        {% if forloop.first %}
-                            <span class="news-tag">Latest</span>
-                        {% endif %}
-                        <h3 class="news-title">{{ post.title }}</h3>
-                        <p class="news-content">{{ post.content }}</p>
-                        <p class="news-date"><small>Posted on {{ post.created_at|date:"d/m/Y" }}</small></p>
-    
-                        {% if request.user.is_authenticated and request.user == post.manager %}
-                            <a href="{% url 'edit_manager_post' post.id %}" class="edit-button">Edit</a>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No recent comments from the manager.</p>
-            {% endif %}
+              </tbody>
+            </table>
+          </div>
         </div>
-    
-        <!-- Navigation Arrows -->
-        <button class="nav-button prev-post">&#9664;</button>
-        <button class="nav-button next-post">&#9654;</button>
-
+      </div>
     </div>
+  </div>
+  
+    <!-- Manager's Comments (News Style) -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="grid-item manager-comments">
+                <div id="manager-comment-container">
+                    {% if manager_posts %}
+                        {% for post in manager_posts %}
+                            <div class="news-card post-item" id="post-{{ forloop.counter0 }}" 
+                                {% if not forloop.first %}style="display:none;"{% endif %}>
+                                {% if forloop.first %}
+                                    <span class="news-tag">Latest</span>
+                                {% endif %}
+                                <h3 class="news-title">{{ post.title }}</h3>
+                                <p class="news-content">{{ post.content }}</p>
+                                <p class="news-date"><small>Posted on {{ post.created_at|date:"d/m/Y" }}</small></p>
 
-    <!-- JavaScript for Cycling Posts -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let currentIndex = 0;
-            const posts = document.querySelectorAll(".post-item");
-            const totalPosts = posts.length;
-    
-            console.log(`Post cycling initialized: ${totalPosts} posts found.`);
-    
-            function changePost(direction) {
-                if (totalPosts <= 1) {
-                    console.warn("⚠️ Only 1 post found, no cycling available.");
-                    return;
-                }
-    
-                // Hide current post
-                posts[currentIndex].style.display = "none";
-    
-                // Update index
-                currentIndex += direction;
-                if (currentIndex < 0) {
-                    currentIndex = totalPosts - 1;
-                } else if (currentIndex >= totalPosts) {
-                    currentIndex = 0;
-                }
-    
-                // Show new post
-                posts[currentIndex].style.display = "block";
+                                {% if request.user.is_authenticated and request.user == post.manager %}
+                                    <a href="{% url 'edit_manager_post' post.id %}" class="edit-button">Edit</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No recent comments from the manager.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Navigation Arrows -->
+                <button class="nav-button prev-post">&#9664;</button>
+                <button class="nav-button next-post">&#9654;</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Cycling Posts -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentIndex = 0;
+        const posts = document.querySelectorAll(".post-item");
+        const totalPosts = posts.length;
+
+        console.log(`Post cycling initialized: ${totalPosts} posts found.`);
+
+        function changePost(direction) {
+            if (totalPosts <= 1) {
+                console.warn("Only 1 post found, no cycling available.");
+                return;
             }
-    
-            // Attach event listeners AFTER defining the function
-            document.querySelector(".prev-post").addEventListener("click", function () {
-                changePost(-1);
-            });
-    
-            document.querySelector(".next-post").addEventListener("click", function () {
-                changePost(1);
-            });
-        });
-    </script>    
 
-</section>
+            posts[currentIndex].style.display = "none";
+
+            currentIndex += direction;
+            if (currentIndex < 0) {
+                currentIndex = totalPosts - 1;
+            } else if (currentIndex >= totalPosts) {
+                currentIndex = 0;
+            }
+
+            posts[currentIndex].style.display = "block";
+        }
+
+        document.querySelector(".prev-post").addEventListener("click", function () {
+            changePost(-1);
+        });
+
+        document.querySelector(".next-post").addEventListener("click", function () {
+            changePost(1);
+        });
+    });
+</script>
 {% endblock %}
