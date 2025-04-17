@@ -179,7 +179,10 @@ def player_dashboard(request):
 
 
 def results_view(request):
-    """View for displaying past match results"""
+    """
+    Return a view displaying all previously played fixtures,
+    ordered by most recent first.
+    """
     past_fixtures = Fixture.objects.filter(match_completed=True).order_by(
         '-date', '-time')
 
@@ -198,7 +201,10 @@ def fixtures_view(request):
 
 
 def league_table(request):
-    """View for displaying league table standings."""
+    """
+    Return a view displaying the league table standings,
+    ordered by points, goals for, and goals against.
+    """
     teams = Team.objects.all().order_by(
         '-points', '-goals_for', 'goals_against')
     return render(request, 'team/league_table.html', {'teams': teams})
@@ -390,7 +396,11 @@ def delete_comment(request, comment_id):
 
 @login_required
 def mark_notification_read(request, notification_id):
-    """Marks a notification as read and keeps user on dashboard."""
+    """
+    Mark a specific notification as read.
+    After saving, redirect the user to their correct dashboard
+    based on their role or the 'next' field in the form.
+    """
     notification = get_object_or_404(Notification, id=notification_id)
 
     if request.method == "POST":
@@ -435,7 +445,10 @@ def edit_manager_message(request, message_id):
 
 @login_required
 def delete_manager_message(request, message_id):
-    """Allows the manager to delete a message sent to players."""
+    """
+    Allow the manager to delete a message sent to players.
+    Only users with the 'manager' role are authorized to perform this action.
+    """
     message = get_object_or_404(ManagerMessage, id=message_id)
 
     # Ensure only the manager who created the message can delete it
@@ -448,7 +461,11 @@ def delete_manager_message(request, message_id):
 
 @login_required
 def delete_manager_post(request, post_id):
-    """Delete an announcement replacing it with the previous one."""
+    """
+    Allow a manager to delete their own post.
+    Only the original manager who created the post is permitted.
+    After deletion, redirect to the manager dashboard.
+    """
     post = get_object_or_404(ManagerPost, id=post_id)
 
     # Only the manager who posted it can delete it
