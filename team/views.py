@@ -6,11 +6,13 @@ from .models import (Team,
                      PlayerAvailability,
                      ManagerMessage,
                      ManagerMessageComment,
-                     Notification)
+                     Notification,
+                     Profile)
 from .forms import (ManagerPostForm,
                     ManagerPost,
                     ManagerMessageForm,
-                    ManagerMessageCommentForm)
+                    ManagerMessageCommentForm,
+                    CustomUserRegistrationForm)
 from django.utils.timezone import now
 from django.utils import timezone
 
@@ -208,6 +210,28 @@ def league_table(request):
     teams = Team.objects.all().order_by(
         '-points', '-goals_for', 'goals_against')
     return render(request, 'team/league_table.html', {'teams': teams})
+
+
+def register_user(request):
+    """
+    Handle user registration for players and managers
+    using an invite code. Creates a matching Profile after User.
+    """
+    if request.method == "POST":
+        form = CustomUserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            role = form.cleaned_data["role"]
+
+            # Create the associated profile with selected role
+            Profile.objects.create(user=user, role=role)
+
+            return redirect("login")
+        # Redirect to login page after registration
+    else:
+        form = CustomUserRegistrationForm()
+
+    return render(request, "team/register.html", {"form": form})
 
 
 @login_required
