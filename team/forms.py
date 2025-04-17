@@ -4,6 +4,9 @@ from .models import (ManagerPost,
                      Profile,
                      ManagerMessage,
                      ManagerMessageComment)
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class ManagerPostForm(forms.ModelForm):
@@ -57,3 +60,29 @@ class ManagerMessageCommentForm(forms.ModelForm):
             "content": forms.Textarea(attrs={
                 "rows": 2, "placeholder": "Write a comment..."}),
         }
+
+class CustomUserRegistrationForm(UserCreationForm):
+    """
+    Custom user registration form with role selection
+    and an invite code for security.
+    """
+    ROLE_CHOICES = [
+        ("player", "Player"),
+        ("manager", "Manager"),
+    ]
+
+    role = forms.ChoiceField(choices=ROLE_CHOICES)
+    invite_code = forms.CharField(
+        max_length=100,
+        help_text="Enter the invite code provided by the club."
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", "password1", "password2", "role", "invite_code")
+
+    def clean_invite_code(self):
+        code = self.cleaned_data["invite_code"]
+        if code != "wyddgrug2024":
+            raise ValidationError("Invalid invite code.")
+        return code
