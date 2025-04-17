@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 
 
 class Team(models.Model):
+    """
+    Represents a football team in the league, including
+    league statistics and visual branding.
+    """
     name = models.CharField(max_length=100, default="CPD Yr Wyddgrug")
     logo = models.CharField(max_length=100, blank=True, null=True)
 
@@ -15,7 +19,10 @@ class Team(models.Model):
     points = models.PositiveIntegerField(default=0)
 
     def calculate_standings(self):
-        """Recalculates the team's standings based on completed fixtures."""
+        """
+        Recalculate the team's league standings based on all
+        completed fixtures. Updates wins, losses, draws, and points.
+        """
         self.games_played = 0
         self.wins = 0
         self.draws = 0
@@ -64,6 +71,10 @@ class Team(models.Model):
 
 
 class Fixture(models.Model):
+    """
+    Represents a scheduled match, including the opponent, location,
+    match status, and result information.
+    """
     HOME_OR_AWAY = [
         ("H", "Home"),
         ("A", "Away"),
@@ -79,7 +90,10 @@ class Fixture(models.Model):
     match_completed = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        """Override save to notify players when a new fixture is added"""
+        """
+        Override the default save method to create a notification
+        for all players when a new fixture is added.
+        """
         is_new = self.pk is None  # Check if this is a new fixture
         super().save(*args, **kwargs)  # Save fixture first
 
@@ -102,6 +116,10 @@ class Fixture(models.Model):
 
 
 class Profile(models.Model):
+    """
+    Extends the default User model with a role field
+    to distinguish between managers and players.
+    """
     ROLE_CHOICES = [
         ("manager", "Manager"),
         ("player", "Player"),
@@ -114,6 +132,10 @@ class Profile(models.Model):
 
 
 class ManagerPost(models.Model):
+    """
+    Represents a post or announcement made by a manager
+    that will appear on the homepage or dashboard.
+    """
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(
         max_length=200, default="Manager's Comments")  # Allow custom headings
@@ -125,6 +147,10 @@ class ManagerPost(models.Model):
 
 
 class PlayerAvailability(models.Model):
+    """
+    Stores availability status of a player for a specific fixture,
+    indicating whether they are available or not.
+    """
     AVAILABILITY_CHOICES = [
         ("yes", "Available"),
         ("no", "Not Available"),
@@ -139,6 +165,10 @@ class PlayerAvailability(models.Model):
 
 
 class ManagerMessage(models.Model):
+    """
+    A message sent by the manager to players, which can
+    receive comments from players.
+    """
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -149,6 +179,10 @@ class ManagerMessage(models.Model):
 
 
 class ManagerMessageComment(models.Model):
+    """
+    A comment made by a player in response to a specific
+    manager message.
+    """
     message = models.ForeignKey(
         'ManagerMessage', on_delete=models.CASCADE, related_name="comments")
     player = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -160,6 +194,10 @@ class ManagerMessageComment(models.Model):
     
 
 class Notification(models.Model):
+    """
+    Represents a system-generated notification sent to a user,
+    triggered by events such as new fixtures, messages, or comments.
+    """
     NOTIFICATION_TYPES = [
         ("fixture", "New Fixture"),
         ("availability", "Player Availability Update"),
