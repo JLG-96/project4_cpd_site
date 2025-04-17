@@ -1020,22 +1020,6 @@ form input, form select {
     margin-bottom: 10px;
 }
 
-form .btn {
-    display: block;
-    width: 100%;
-    background-color: #c40000;
-    color: white;
-    border: none;
-    padding: 12px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-form .btn:hover {
-    background-color: #a80000;
-}
-
 /* Error message styling */
 ul.errorlist {
     list-style-type: none;
