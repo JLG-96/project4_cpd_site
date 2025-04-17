@@ -1,44 +1,51 @@
 {% extends "team/base.html" %}
 
 {% block content %}
-{% if teams %}
-<div class="league-table-container">
-    <h1>North East Wales League Championship 24/25</h1>
-    <table class="league-table">
-        <thead>
-            <tr>
-                <th>Pos</th>
-                <th>Team</th>
-                <th>Played</th>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>GF</th>
-                <th>GA</th>
-                <th>GD</th>
-                <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for team in teams %}
-            <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ team.name }}</td>
-                <td>{{ team.games_played }}</td>
-                <td>{{ team.wins }}</td>
-                <td>{{ team.draws }}</td>
-                <td>{{ team.losses }}</td>
-                <td>{{ team.goals_for }}</td>
-                <td>{{ team.goals_against }}</td>
-                <td>{{ team.goals_for|add:team.goals_against|default:0 }}</td>
-                <td>{{ team.points }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container mt-4">
+    {% if teams %}
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="league-table-container">
+                    <h1 class="text-center">North East Wales League Championship 24/25</h1>
+                    <div class="table-responsive">
+                        <table class="league-table">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Team</th>
+                                    <th>Played</th>
+                                    <th>W</th>
+                                    <th>D</th>
+                                    <th>L</th>
+                                    <th>GF</th>
+                                    <th>GA</th>
+                                    <th>GD</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team in teams %}
+                                <tr {% if team.name == "CPD Yr Wyddgrug" %} class="highlight" {% endif %}>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ team.name }}</td>
+                                    <td>{{ team.games_played }}</td>
+                                    <td>{{ team.wins }}</td>
+                                    <td>{{ team.draws }}</td>
+                                    <td>{{ team.losses }}</td>
+                                    <td>{{ team.goals_for }}</td>
+                                    <td>{{ team.goals_against }}</td>
+                                    <td>{{ team.goals_for|add:team.goals_against|default:0 }}</td>
+                                    <td>{{ team.points }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p class="no-teams text-center">No teams have been added yet.</p>
+    {% endif %}
 </div>
-{% else %}
-    <p class="no-teams">No teams have been added yet.</p>
-{% endif %}
-
 {% endblock %}
