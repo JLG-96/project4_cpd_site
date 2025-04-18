@@ -37,15 +37,25 @@
                 
                     {% if user.is_authenticated %}
                         {% if user.profile.role == "manager" %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'manager_dashboard' %}">Manager Dashboard</a>
+                            <li class="nav-item position-relative">
+                                <a class="nav-link" href="{% url 'manager_dashboard' %}">
+                                    Manager Dashboard
+                                    {% if new_notifications %}
+                                        <span class="notification-dot"></span>
+                                    {% endif %}
+                                </a>
                             </li>
                         {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'player_dashboard' %}">Player Dashboard</a>
+                            <li class="nav-item position-relative">
+                                <a class="nav-link" href="{% url 'player_dashboard' %}">
+                                    Player Dashboard
+                                    {% if new_notifications %}
+                                        <span class="notification-dot"></span>
+                                    {% endif %}
+                                </a>
                             </li>
                         {% endif %}
-                
+
                         <li class="nav-item d-flex align-items-center">
                             <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
                                 {% csrf_token %}
