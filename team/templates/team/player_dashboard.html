@@ -44,29 +44,32 @@
                 <h2 class="fs-4 mb-3">Message from the Manager</h2>
                 {% if manager_messages %}
                     {% for message in manager_messages %}
-                        <div class="mb-3">
-                            <h5 class="text-primary mb-2" style="cursor:pointer;" onclick="toggleMessage({{ message.id }})">
+                        <div class="border rounded p-3 mb-3 shadow-sm">
+                            <h5 class="mb-2 message-title text-primary" style="cursor: pointer;" onclick="toggleMessage('{{ message.id }}')">
                                 {{ message.title }}
                             </h5>
                             <div id="message-{{ message.id }}" class="d-none">
                                 <p>{{ message.content }}</p>
                                 <p><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
 
-                                <button class="btn btn-outline-secondary btn-sm mb-2" onclick="toggleComments({{ message.id }})">
+                                <button id="toggle-comments-btn-{{ message.id }}" class="btn btn-outline-dark btn-sm mb-2 mt-2" style="font-weight: 500;" onclick="toggleComments('{{ message.id }}')">
                                     Show Comments ({{ message.comments.count }})
                                 </button>
+
                                 <div id="comments-{{ message.id }}" class="d-none">
                                     {% for comment in message.comments.all %}
                                         <div class="border-top pt-2">
                                             <p><strong>{{ comment.player.username }}</strong>: {{ comment.content }}</p>
                                             <p class="text-muted small">Posted on {{ comment.created_at|date:"d/m/Y" }}</p>
                                             {% if request.user == comment.player %}
-                                                <a href="{% url 'edit_comment' comment.id %}" class="me-2">Edit</a>
-                                                <a href="{% url 'delete_comment' comment.id %}" onclick="return confirm('Are you sure?');">Delete</a>
+                                                <div class="d-flex gap-2">
+                                                    <a href="{% url 'edit_comment' comment.id %}" class="btn btn-primary btn-sm text-white">Edit</a>
+                                                    <a href="{% url 'delete_comment' comment.id %}" class="btn btn-danger btn-sm text-white" onclick="return confirm('Are you sure?');">Delete</a>
+                                                </div>
                                             {% endif %}
                                         </div>
                                     {% endfor %}
-                                    <form method="POST" action="{% url 'add_comment' message.id %}" class="mt-2">
+                                    <form method="POST" action="{% url 'add_comment' message.id %}" class="mt-3">
                                         {% csrf_token %}
                                         <input type="hidden" name="message_id" value="{{ message.id }}">
                                         {{ comment_form.content }}
@@ -141,7 +144,11 @@
     }
     function toggleComments(id) {
         const comments = document.getElementById(`comments-${id}`);
-        if (comments) comments.classList.toggle("d-none");
+        const btn = document.getElementById(`toggle-comments-btn-${id}`);
+        if (comments && btn) {
+            const isHidden = comments.classList.toggle("d-none");
+            btn.textContent = isHidden ? `Show Comments (${comments.children.length})` : `Hide Comments (${comments.children.length})`;
+        }
     }
 </script>
 
