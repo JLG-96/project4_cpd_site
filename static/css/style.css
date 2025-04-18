@@ -726,6 +726,15 @@ body {
     margin-bottom: 20px;
 }
 
+/* Custom availability border overrides */
+.availability-card.available {
+    border: 5px solid #28a745;  /* Green */
+}
+
+.availability-card.unavailable {
+    border: 5px solid #dc3545;  /* Red */
+}
+
 /* Radio Buttons Styling */
 .availability-card label {
     display: inline-block;

@@ -93,9 +93,9 @@
             {% for fixture in upcoming_fixtures %}
                 {% with fixture_availability|get_item:fixture.id as availability %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="bg-white p-3 rounded shadow-sm h-100 text-center 
-                        {% if availability.status == 'yes' %}border border-success
-                        {% elif availability.status == 'no' %}border border-danger
+                    <div class="availability-card bg-white p-3 rounded shadow-sm h-100 text-center
+                        {% if availability.status == 'yes' %} available
+                        {% elif availability.status == 'no' %} unavailable
                         {% endif %}">
 
                         {% if fixture.opponent.logo %}
