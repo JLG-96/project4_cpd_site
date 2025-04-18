@@ -15,23 +15,27 @@
           <div class="p-3 border rounded bg-white shadow-sm h-100">
             <h2 class="fs-4 mb-3">Notifications</h2>
             {% if notifications %}
-              <ul class="list-unstyled">
+              <div class="d-flex flex-column gap-2">
                 {% for notification in notifications %}
-                  <li class="p-3 bg-white shadow-sm rounded d-flex justify-content-between align-items-center mb-2">
-                    <div class="{% if not notification.is_read %}text-danger fw-bold{% endif %}">
-                      {% if forloop.first %}
+                  <div class="alert d-flex justify-content-between align-items-center mb-1 p-2 
+                    {% if forloop.first and not notification.is_read %}alert-success
+                    {% else %}alert-danger{% endif %}">
+                    
+                    <div>
+                      {% if forloop.first and not notification.is_read %}
                         <span class="badge bg-danger me-2">NEW</span>
                       {% endif %}
                       {{ notification.message }}
                     </div>
-                    <form method="POST" action="{% url 'mark_notification_read' notification.id %}" class="d-inline">
+                    <form method="POST" action="{% url 'mark_notification_read' notification.id %}" class="d-inline ms-2">
                       {% csrf_token %}
                       <input type="hidden" name="next" value="{% url 'manager_dashboard' %}">
-                      <button type="submit" class="btn btn-sm btn-danger border-0">Remove</button>
+                      <button type="submit" class="btn btn-danger btn-sm border-0">Remove</button>
                     </form>
-                  </li>
+                  </div>
                 {% endfor %}
-              </ul>
+              </div>
+
             {% else %}
               <p>No new notifications.</p>
             {% endif %}
