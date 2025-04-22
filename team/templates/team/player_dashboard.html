@@ -53,7 +53,7 @@
                                 <p><small>Sent on {{ message.created_at|date:"d/m/Y" }}</small></p>
 
                                 <button id="toggle-comments-btn-{{ message.id }}" class="btn btn-outline-dark btn-sm mb-2 mt-2" style="font-weight: 500;" onclick="toggleComments('{{ message.id }}')">
-                                    Show Comments ({{ message.comments.count }})
+                                    Show Comments {{ message.comments.count }}
                                 </button>
 
                                 <div id="comments-{{ message.id }}" class="d-none">
