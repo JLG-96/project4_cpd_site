@@ -388,7 +388,7 @@ def add_comment(request, message_id):
 
 @login_required
 def edit_comment(request, comment_id):
-    """Allows players to edit their own comments."""
+    """Allows players to edit their own comments and notify the manager."""
     comment = get_object_or_404(ManagerMessageComment, id=comment_id)
 
     if request.user != comment.player:
@@ -398,13 +398,23 @@ def edit_comment(request, comment_id):
         form = ManagerMessageCommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save()
-            return redirect("player_dashboard")  # Redirect back after editing
 
+            # Notify the manager
+            Notification.objects.create(
+                recipient=comment.message.manager,
+                type="comment",
+                message=f"{request.user.username} edited their comment on your post titled '{comment.message.title}'.",
+                is_read=False,
+            )
+
+            return redirect("player_dashboard")  # Redirect back after editing
     else:
         form = ManagerMessageCommentForm(instance=comment)
 
     return render(request, "team/edit_comment.html", {
-        "form": form, "comment": comment})
+        "form": form, "comment": comment
+    })
+
 
 
 @login_required
