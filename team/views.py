@@ -404,7 +404,8 @@ def edit_comment(request, comment_id):
             Notification.objects.create(
                 recipient=comment.message.manager,
                 type="comment",
-                message=f"{request.user.username} edited their comment on your post titled '{comment.message.title}'.",
+                message=f"{request.user.username} edited their comment: '{
+                    comment.message.title}'.",
                 is_read=False,
             )
 
@@ -471,7 +472,8 @@ def edit_manager_message(request, message_id):
                 Notification.objects.create(
                     recipient=player,
                     type="message",
-                    message=f"The manager has updated their message titled '{message.title}'.",
+                    message=f"The manager has updated their message titled '{
+                        message.title}'.",
                     link=reverse("player_dashboard")
                 )
 
