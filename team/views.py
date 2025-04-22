@@ -15,6 +15,7 @@ from .forms import (ManagerPostForm,
                     CustomUserRegistrationForm)
 from django.utils.timezone import now
 from django.utils import timezone
+from django.urls import reverse
 
 
 def home(request):
@@ -244,12 +245,12 @@ def edit_manager_post(request, post_id):
         if form.is_valid():
             form.save()
             return redirect("home")  # Redirect back to homepage
-
     else:
         form = ManagerPostForm(instance=post)
 
     return render(request, "team/edit_manager_post.html", {
-        "form": form, "post": post})
+        "form": form, "post": post
+    })
 
 
 @login_required
@@ -416,7 +417,6 @@ def edit_comment(request, comment_id):
     })
 
 
-
 @login_required
 def delete_comment(request, comment_id):
     """Allows players to delete their own comments."""
@@ -457,24 +457,33 @@ def mark_notification_read(request, notification_id):
 
 @login_required
 def edit_manager_message(request, message_id):
-    """Allows the manager to edit a message sent to players."""
+    """Allows manager to edit a previously sent message and notify players."""
     message = get_object_or_404(ManagerMessage, id=message_id)
-
-    # Ensure only the manager who created the message can edit it
-    if request.user != message.manager:
-        return redirect("manager_dashboard")
 
     if request.method == "POST":
         form = ManagerMessageForm(request.POST, instance=message)
         if form.is_valid():
             form.save()
-            return redirect("manager_dashboard")  # Redirect back after editing
+
+            # Notify all players about the updated manager message
+            players = User.objects.filter(profile__role="player")
+            for player in players:
+                Notification.objects.create(
+                    recipient=player,
+                    type="message",
+                    message=f"The manager has updated their message titled '{message.title}'.",
+                    link=reverse("player_dashboard")
+                )
+
+            return redirect("manager_dashboard")
 
     else:
         form = ManagerMessageForm(instance=message)
 
     return render(request, "team/edit_manager_message.html", {
-        "form": form, "message": message})
+        "form": form,
+        "message": message
+    })
 
 
 @login_required
