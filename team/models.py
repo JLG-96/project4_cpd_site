@@ -191,7 +191,7 @@ class ManagerMessageComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.player.username} on {self.message.title}"
-    
+
 
 class Notification(models.Model):
     """

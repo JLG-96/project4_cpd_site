@@ -20,7 +20,7 @@ from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
      path('', home, name='home'),
-     path('results/', results_view, name='results'), 
+     path('results/', results_view, name='results'),
      path('fixtures/', fixtures_view, name='fixtures'),
      path('table/', league_table, name='league_table'),
      path("manager-dashboard/", manager_dashboard, name="manager_dashboard"),
